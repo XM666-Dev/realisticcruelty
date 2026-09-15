@@ -1,5 +1,6 @@
 package com.xm666.realisticcruelty.network;
 
+import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.math.ClipHandler;
 import com.xm666.realisticcruelty.math.Random;
 import com.xm666.realisticcruelty.math.Transform;
@@ -30,8 +31,8 @@ public abstract class HitInfo {
 
         @Override
         public Transform getParticleTransform() {
-            var spreadDegrees = 60.0F;
-            var rotationAngle = Random.nextAngle(spreadDegrees);
+            var bloodRaySpreadDegrees = Config.BLOOD_RAY_SPREAD_DEGREES.get().floatValue();
+            var rotationAngle = Random.nextAngle(bloodRaySpreadDegrees);
             var particleRotation = VectorMath.randomRotate(particleDirection, rotationAngle);
             return new Transform(hitPosition, particleRotation);
         }
@@ -59,8 +60,8 @@ public abstract class HitInfo {
 
         @Override
         public Transform getParticleTransform() {
-            var spreadDegrees = 60.0F;
-            var rotationAngle = Random.nextAngle(spreadDegrees);
+            var bloodSphereSpreadDegrees = Config.BLOOD_SPHERE_SPREAD_DEGREES.get().floatValue();
+            var rotationAngle = Random.nextAngle(bloodSphereSpreadDegrees);
             var hitRotation = VectorMath.randomRotate(hitDirection, rotationAngle);
             var destinationPosition = sourcePosition.add(hitRotation);
             var hitPoint = ClipHandler.expandedClip(targetBoundingBox, sourcePosition, destinationPosition).orElse(sourcePosition);

@@ -1,5 +1,6 @@
 package com.xm666.realisticcruelty.particle;
 
+import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import com.xm666.realisticcruelty.math.Random;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -33,10 +34,9 @@ public class BloodSplashParticle extends TextureSheetParticle {
             if (this.age < end) {
                 this.age = end;
 
-                var volumeMultiplier = 1.0F;
-
+                var bloodSplashVolume = Config.BLOOD_SPLASH_VOLUME.get().floatValue();
                 var sound = SoundEvents.BEEHIVE_DRIP;
-                var volume = Mth.randomBetween(this.random, 0.3F, 1.0F) * volumeMultiplier;
+                var volume = Mth.randomBetween(this.random, 0.3F, 1.0F) * bloodSplashVolume;
                 this.level.playLocalSound(this.x, this.y, this.z, sound, SoundSource.BLOCKS, volume, 1.0F, false);
             }
         }
