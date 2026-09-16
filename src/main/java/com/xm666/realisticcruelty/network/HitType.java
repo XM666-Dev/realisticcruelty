@@ -20,10 +20,10 @@ public enum HitType {
 
         @Override
         public HitInfo getHitInfo(AABB targetBoundingBox, Vec3 sourcePosition, Vec3 sourceDirection) {
-            return new HitInfo.Ray(targetBoundingBox, sourcePosition, sourceDirection);
+            return new HitInfo.Melee(targetBoundingBox, sourcePosition, sourceDirection);
         }
     },
-    RANGE {
+    PROJECTILE {
         @Override
         public Vec3 getSourcePosition(Entity entity) {
             return entity.position();
@@ -36,7 +36,7 @@ public enum HitType {
 
         @Override
         public HitInfo getHitInfo(AABB targetBoundingBox, Vec3 sourcePosition, Vec3 sourceDirection) {
-            return new HitInfo.Ray(targetBoundingBox, sourcePosition, sourceDirection);
+            return new HitInfo.Projectile(targetBoundingBox, sourcePosition, sourceDirection);
         }
     },
     EXPLOSION {
@@ -50,7 +50,7 @@ public enum HitType {
 
         @Override
         public HitInfo getHitInfo(AABB targetBoundingBox, Vec3 sourcePosition, Vec3 sourceDirection) {
-            return new HitInfo.Sphere(targetBoundingBox, sourcePosition, sourceDirection);
+            return new HitInfo.Explosion(targetBoundingBox, sourcePosition, sourceDirection);
         }
     };
 
@@ -60,7 +60,7 @@ public enum HitType {
         } else if (damageSource.isDirect()) {
             return HitType.MELEE;
         }
-        return HitType.RANGE;
+        return HitType.PROJECTILE;
     }
 
     public abstract Vec3 getSourcePosition(Entity entity);

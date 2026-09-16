@@ -81,17 +81,18 @@ public class BloodParticle extends TextureSheetParticle {
             this.stoppedByCollision = true;
 
             var bloodSplatEnabled = Config.BLOOD_SPLAT_ENABLED.get();
-            var bloodSplashCount = Config.BLOOD_SPLASH_COUNT.get();
-            var bloodVolume = Config.BLOOD_VOLUME.get().floatValue();
-
             if (bloodSplatEnabled) {
                 this.level.addParticle(ParticleTypes.BLOOD_SPLAT.get(), this.x, this.y, this.z, normal.ordinal(), 0.0D, 0.0D);
             }
 
+            var bloodSplashCountMin = Config.BLOOD_SPLASH_COUNT_MIN.get();
+            var bloodSplashCountMax = Config.BLOOD_SPLASH_COUNT_MAX.get();
+            var bloodSplashCount = Random.nextInt(bloodSplashCountMin, bloodSplashCountMax);
             while (bloodSplashCount-- > 0) {
                 this.level.addParticle(ParticleTypes.BLOOD_SPLASH.get(), this.x, this.y, this.z, 0.0D, 0.0D, 0.0D);
             }
 
+            var bloodVolume = Config.BLOOD_VOLUME.get().floatValue();
             var sound = SoundEvents.BEEHIVE_DRIP;
             var volume = Random.nextFloat(0.3F, 1.0F) * bloodVolume;
             this.level.playLocalSound(this.x, this.y, this.z, sound, SoundSource.BLOCKS, volume, 1.0F, false);

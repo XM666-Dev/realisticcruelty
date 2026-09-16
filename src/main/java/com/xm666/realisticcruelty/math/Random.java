@@ -6,6 +6,18 @@ import net.minecraft.util.RandomSource;
 public class Random {
     private static final RandomSource random = RandomSource.create();
 
+    public static int nextInt() {
+        return random.nextInt();
+    }
+
+    public static int nextInt(int max) {
+        return random.nextInt(max);
+    }
+
+    public static int nextInt(int min, int max) {
+        return random.nextInt(min, max);
+    }
+
     public static float nextFloat() {
         return random.nextFloat();
     }

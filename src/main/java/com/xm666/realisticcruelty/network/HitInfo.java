@@ -13,7 +13,13 @@ public abstract class HitInfo {
 
     public abstract Transform getParticleTransform();
 
-    public static class Ray extends HitInfo {
+    public abstract double getParticleSpeedMinMultiplier();
+
+    public abstract double getParticleSpeedMaxMultiplier();
+
+    public abstract float getParticleSpreadDegrees();
+
+    public abstract static class Ray extends HitInfo {
         private final Vec3 hitPosition;
         private final Vec3 particleDirection;
 
@@ -31,21 +37,63 @@ public abstract class HitInfo {
 
         @Override
         public Transform getParticleTransform() {
-            var bloodRaySpreadDegrees = Config.BLOOD_RAY_SPREAD_DEGREES.get().floatValue();
-            var rotationAngle = Random.nextAngle(bloodRaySpreadDegrees);
+            var spreadDegrees = getParticleSpreadDegrees();
+            var rotationAngle = Random.nextAngle(spreadDegrees);
             var particleRotation = VectorMath.randomRotate(particleDirection, rotationAngle);
             return new Transform(hitPosition, particleRotation);
         }
     }
 
-    public static class Sphere extends HitInfo {
+    public static class Melee extends Ray {
+        public Melee(AABB targetBoundingBox, Vec3 sourcePosition, Vec3 sourceDirection) {
+            super(targetBoundingBox, sourcePosition, sourceDirection);
+        }
+
+        @Override
+        public double getParticleSpeedMinMultiplier() {
+            return Config.BLOOD_MELEE_SPEED_MIN_MULTIPLIER.get();
+        }
+
+        @Override
+        public double getParticleSpeedMaxMultiplier() {
+            return Config.BLOOD_MELEE_SPEED_MAX_MULTIPLIER.get();
+        }
+
+        @Override
+        public float getParticleSpreadDegrees() {
+            return Config.BLOOD_MELEE_SPREAD_DEGREES.get().floatValue();
+        }
+    }
+
+    public static class Projectile extends Ray {
+        public Projectile(AABB targetBoundingBox, Vec3 sourcePosition, Vec3 sourceDirection) {
+            super(targetBoundingBox, sourcePosition, sourceDirection);
+        }
+
+        @Override
+        public double getParticleSpeedMinMultiplier() {
+            return Config.BLOOD_PROJECTILE_SPEED_MIN_MULTIPLIER.get();
+        }
+
+        @Override
+        public double getParticleSpeedMaxMultiplier() {
+            return Config.BLOOD_PROJECTILE_SPEED_MAX_MULTIPLIER.get();
+        }
+
+        @Override
+        public float getParticleSpreadDegrees() {
+            return Config.BLOOD_PROJECTILE_SPREAD_DEGREES.get().floatValue();
+        }
+    }
+
+    public static class Explosion extends HitInfo {
         private final AABB targetBoundingBox;
         private final Vec3 sourcePosition;
         private final Vec3 hitPosition;
         private final Vec3 hitDirection;
         private final Vec3 particleDirection;
 
-        public Sphere(AABB targetBoundingBox, Vec3 sourcePosition, Vec3 sourceDirection) {
+        public Explosion(AABB targetBoundingBox, Vec3 sourcePosition, Vec3 sourceDirection) {
             this.targetBoundingBox = targetBoundingBox;
             this.sourcePosition = sourcePosition;
             hitPosition = VectorMath.clamp(sourcePosition, targetBoundingBox);
@@ -60,14 +108,29 @@ public abstract class HitInfo {
 
         @Override
         public Transform getParticleTransform() {
-            var bloodSphereSpreadDegrees = Config.BLOOD_SPHERE_SPREAD_DEGREES.get().floatValue();
-            var rotationAngle = Random.nextAngle(bloodSphereSpreadDegrees);
+            var spreadDegrees = getParticleSpreadDegrees();
+            var rotationAngle = Random.nextAngle(spreadDegrees);
             var hitRotation = VectorMath.randomRotate(hitDirection, rotationAngle);
             var destinationPosition = sourcePosition.add(hitRotation);
             var hitPoint = ClipHandler.expandedClip(targetBoundingBox, sourcePosition, destinationPosition).orElse(sourcePosition);
             var particlePosition = VectorMath.clamp(hitPoint, targetBoundingBox);
             var particleRotation = VectorMath.reflect(hitRotation, particleDirection);
             return new Transform(particlePosition, particleRotation);
+        }
+
+        @Override
+        public double getParticleSpeedMinMultiplier() {
+            return Config.BLOOD_EXPLOSION_SPEED_MIN_MULTIPLIER.get();
+        }
+
+        @Override
+        public double getParticleSpeedMaxMultiplier() {
+            return Config.BLOOD_EXPLOSION_SPEED_MAX_MULTIPLIER.get();
+        }
+
+        @Override
+        public float getParticleSpreadDegrees() {
+            return Config.BLOOD_EXPLOSION_SPREAD_DEGREES.get().floatValue();
         }
     }
 }
