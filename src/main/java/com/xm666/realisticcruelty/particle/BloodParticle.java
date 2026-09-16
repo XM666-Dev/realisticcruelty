@@ -92,9 +92,9 @@ public class BloodParticle extends TextureSheetParticle {
                 this.level.addParticle(ParticleTypes.BLOOD_SPLASH.get(), this.x, this.y, this.z, 0.0D, 0.0D, 0.0D);
             }
 
-            var bloodVolume = Config.BLOOD_VOLUME.get().floatValue();
+            var bloodVolumeMultiplier = Config.BLOOD_VOLUME_MULTIPLIER.get().floatValue();
             var sound = SoundEvents.BEEHIVE_DRIP;
-            var volume = Random.nextFloat(0.3F, 1.0F) * bloodVolume;
+            var volume = Random.nextFloat(0.3F, 1.0F) * bloodVolumeMultiplier;
             this.level.playLocalSound(this.x, this.y, this.z, sound, SoundSource.BLOCKS, volume, 1.0F, false);
         }
     }

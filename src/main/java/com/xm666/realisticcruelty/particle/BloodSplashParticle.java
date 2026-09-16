@@ -34,9 +34,9 @@ public class BloodSplashParticle extends TextureSheetParticle {
             if (this.age < end) {
                 this.age = end;
 
-                var bloodSplashVolume = Config.BLOOD_SPLASH_VOLUME.get().floatValue();
+                var bloodSplashVolumeMultiplier = Config.BLOOD_SPLASH_VOLUME_MULTIPLIER.get().floatValue();
                 var sound = SoundEvents.BEEHIVE_DRIP;
-                var volume = Mth.randomBetween(this.random, 0.3F, 1.0F) * bloodSplashVolume;
+                var volume = Mth.randomBetween(this.random, 0.3F, 1.0F) * bloodSplashVolumeMultiplier;
                 this.level.playLocalSound(this.x, this.y, this.z, sound, SoundSource.BLOCKS, volume, 1.0F, false);
             }
         }

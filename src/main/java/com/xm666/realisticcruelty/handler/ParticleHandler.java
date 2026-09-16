@@ -32,9 +32,9 @@ public class ParticleHandler {
     }
 
     public static float getBloodAmount(float amount) {
-        var bloodAmountMultiplier = Config.BLOOD_AMOUNT_MULTIPLIER.get().floatValue();
+        var bloodAmountFactor = Config.BLOOD_AMOUNT_FACTOR.get().floatValue();
         var bloodAmountMax = Config.BLOOD_AMOUNT_MAX.get().floatValue();
-        return Math.min(amount * bloodAmountMultiplier, bloodAmountMax);
+        return Math.min(amount * bloodAmountFactor, bloodAmountMax);
     }
 
     public static double getBloodSpeed(double amountSqrt) {
