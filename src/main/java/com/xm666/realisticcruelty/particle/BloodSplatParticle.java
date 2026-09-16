@@ -2,6 +2,7 @@ package com.xm666.realisticcruelty.particle;
 
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -24,7 +25,7 @@ public class BloodSplatParticle extends TextureSheetParticle {
 
     private BloodSplatParticle(ClientLevel level, double x, double y, double z, SpriteSet sprites) {
         super(level, x, y, z);
-        this.lifetime = 100;
+        this.lifetime = Config.BLOOD_SPLAT_LIFETIME.get();
         this.hasPhysics = false;
         this.quadSize = 0.5F;
         this.pickSprite(sprites);
