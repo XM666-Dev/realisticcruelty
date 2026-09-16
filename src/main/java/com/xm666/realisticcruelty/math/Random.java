@@ -11,11 +11,11 @@ public class Random {
     }
 
     public static int nextInt(int max) {
-        return random.nextInt(max);
+        return random.nextInt(max + 1);
     }
 
     public static int nextInt(int min, int max) {
-        return random.nextInt(min, max);
+        return random.nextInt(min, max + 1);
     }
 
     public static float nextFloat() {
