@@ -27,11 +27,23 @@ public class Config {
     public static final ModConfigSpec.DoubleValue BLOOD_MELEE_SPEED_MAX_MULTIPLIER = BUILDER
             .defineInRange("blood_melee_speed_max_multiplier", 0.5, 0.0, Double.MAX_VALUE);
 
+    public static final ModConfigSpec.DoubleValue BLOOD_MELEE_SPREAD_DEGREES = BUILDER
+            .defineInRange("blood_melee_spread_degrees", 60.0, 0.0, Double.MAX_VALUE);
+
+    public static final ModConfigSpec.BooleanValue BLOOD_MELEE_FOG_ENABLED = BUILDER
+            .define("blood_melee_fog_enabled", false);
+
     public static final ModConfigSpec.DoubleValue BLOOD_PROJECTILE_SPEED_MIN_MULTIPLIER = BUILDER
             .defineInRange("blood_projectile_speed_min_multiplier", 0.5, 0.0, Double.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue BLOOD_PROJECTILE_SPEED_MAX_MULTIPLIER = BUILDER
             .defineInRange("blood_projectile_speed_max_multiplier", 1.0, 0.0, Double.MAX_VALUE);
+
+    public static final ModConfigSpec.DoubleValue BLOOD_PROJECTILE_SPREAD_DEGREES = BUILDER
+            .defineInRange("blood_projectile_spread_degrees", 60.0, 0.0, Double.MAX_VALUE);
+
+    public static final ModConfigSpec.BooleanValue BLOOD_PROJECTILE_FOG_ENABLED = BUILDER
+            .define("blood_projectile_fog_enabled", true);
 
     public static final ModConfigSpec.DoubleValue BLOOD_EXPLOSION_SPEED_MIN_MULTIPLIER = BUILDER
             .defineInRange("blood_explosion_speed_min_multiplier", 0.5, 0.0, Double.MAX_VALUE);
@@ -39,14 +51,11 @@ public class Config {
     public static final ModConfigSpec.DoubleValue BLOOD_EXPLOSION_SPEED_MAX_MULTIPLIER = BUILDER
             .defineInRange("blood_explosion_speed_max_multiplier", 1.0, 0.0, Double.MAX_VALUE);
 
-    public static final ModConfigSpec.DoubleValue BLOOD_MELEE_SPREAD_DEGREES = BUILDER
-            .defineInRange("blood_melee_spread_degrees", 60.0, 0.0, Double.MAX_VALUE);
-
-    public static final ModConfigSpec.DoubleValue BLOOD_PROJECTILE_SPREAD_DEGREES = BUILDER
-            .defineInRange("blood_projectile_spread_degrees", 60.0, 0.0, Double.MAX_VALUE);
-
     public static final ModConfigSpec.DoubleValue BLOOD_EXPLOSION_SPREAD_DEGREES = BUILDER
             .defineInRange("blood_explosion_spread_degrees", 75.0, 0.0, Double.MAX_VALUE);
+
+    public static final ModConfigSpec.BooleanValue BLOOD_EXPLOSION_FOG_ENABLED = BUILDER
+            .define("blood_explosion_fog_enabled", true);
 
     public static final ModConfigSpec.BooleanValue BLOOD_SPLAT_ENABLED = BUILDER
             .define("blood_splat_enabled", true);

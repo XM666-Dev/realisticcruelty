@@ -24,6 +24,8 @@ public class ParticleHandler {
             --bloodAmount;
         }
 
+        if (!hitInfo.isParticleFogEnabled()) return;
+
         var hitPosition = hitInfo.getHitPosition();
         var bloodFogSize = getBloodFogSize(amountSqrt);
         addParticle(ParticleTypes.BLOOD_FOG.get(), hitPosition, new Vec3(bloodFogSize, 0.0, 0.0));

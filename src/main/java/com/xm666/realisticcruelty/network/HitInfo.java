@@ -19,6 +19,8 @@ public abstract class HitInfo {
 
     public abstract float getParticleSpreadDegrees();
 
+    public abstract boolean isParticleFogEnabled();
+
     public abstract static class Ray extends HitInfo {
         private final Vec3 hitPosition;
         private final Vec3 particleDirection;
@@ -63,6 +65,11 @@ public abstract class HitInfo {
         public float getParticleSpreadDegrees() {
             return Config.BLOOD_MELEE_SPREAD_DEGREES.get().floatValue();
         }
+
+        @Override
+        public boolean isParticleFogEnabled() {
+            return Config.BLOOD_MELEE_FOG_ENABLED.get();
+        }
     }
 
     public static class Projectile extends Ray {
@@ -83,6 +90,11 @@ public abstract class HitInfo {
         @Override
         public float getParticleSpreadDegrees() {
             return Config.BLOOD_PROJECTILE_SPREAD_DEGREES.get().floatValue();
+        }
+
+        @Override
+        public boolean isParticleFogEnabled() {
+            return Config.BLOOD_PROJECTILE_FOG_ENABLED.get();
         }
     }
 
@@ -131,6 +143,11 @@ public abstract class HitInfo {
         @Override
         public float getParticleSpreadDegrees() {
             return Config.BLOOD_EXPLOSION_SPREAD_DEGREES.get().floatValue();
+        }
+
+        @Override
+        public boolean isParticleFogEnabled() {
+            return Config.BLOOD_EXPLOSION_FOG_ENABLED.get();
         }
     }
 }
