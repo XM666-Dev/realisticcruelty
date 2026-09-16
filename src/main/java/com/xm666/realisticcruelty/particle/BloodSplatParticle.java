@@ -1,42 +1,43 @@
 package com.xm666.realisticcruelty.particle;
 
-
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.math.InverseFunction;
+import com.xm666.realisticcruelty.math.VectorMath;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.SimpleParticleType;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.List;
 
 public class BloodSplatParticle extends TextureSheetParticle {
-    private static final Quaternionf UP = new Quaternionf().rotateX(-Mth.HALF_PI);
     private static final InverseFunction FADE_IN = new InverseFunction(0.9F, 0.8F, true);
     private static final InverseFunction FADE_OUT = new InverseFunction(0.9F, 0.2F, false);
+    private final Direction rotation;
 
-    private BloodSplatParticle(ClientLevel level, double x, double y, double z, SpriteSet sprites) {
+    private BloodSplatParticle(ClientLevel level, double x, double y, double z, double xd, SpriteSet sprites) {
         super(level, x, y, z);
         this.lifetime = Config.BLOOD_SPLAT_LIFETIME.get();
         this.hasPhysics = false;
         this.quadSize = 0.5F;
         this.pickSprite(sprites);
+        this.rotation = Direction.values()[(int) xd];
     }
 
     @Override
-    public void tick() {
-        super.tick();
-        var velocity = new Vec3(0.0, -1.0, 0.0);
+    public void move(double x, double y, double z) {
+        var velocity = getDirectionVector().reverse();
         var movement = Entity.collideBoundingBox(null, velocity, this.getBoundingBox(), this.level, List.of());
-        if (movement.y < 0.0) {
+        if (!VectorMath.abs(movement).equals(Vec3.ZERO)) {
             remove();
         }
     }
@@ -54,7 +55,7 @@ public class BloodSplatParticle extends TextureSheetParticle {
 
     @Override
     public FacingCameraMode getFacingCameraMode() {
-        return (quaternionf, camera, v) -> quaternionf.set(UP);
+        return (quaternionf, camera, v) -> quaternionf.set(getDirectionQuaternion());
     }
 
     @Override
@@ -69,14 +70,30 @@ public class BloodSplatParticle extends TextureSheetParticle {
         var camera = gameRenderer.getMainCamera();
         var cameraPosition = camera.getPosition();
         var distance = cameraPosition.distanceTo(getPos());
-        var offset = 0.001 * Math.sqrt(distance);
-        y = (float) (y + offset);
+        var offsetLength = Math.sqrt(distance) * 0.001;
+        if (rotation == Direction.DOWN) {
+            offsetLength -= getBoundingBox().getYsize();
+        } else if (rotation != Direction.UP) {
+            offsetLength -= getBoundingBox().getYsize() * 0.5;
+        }
+        var offset = getDirectionVector().scale(offsetLength);
+        x = (float) (x + offset.x);
+        y = (float) (y + offset.y);
+        z = (float) (z + offset.z);
         super.renderRotatedQuad(buffer, quaternion, x, y, z, partialTicks);
+    }
+
+    private Vec3 getDirectionVector() {
+        return new Vec3(rotation.step());
+    }
+
+    private Quaternionf getDirectionQuaternion() {
+        return new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, 1.0F), rotation.step());
     }
 
     public record Provider(SpriteSet sprites) implements ParticleProvider<SimpleParticleType> {
         public BloodSplatParticle createParticle(SimpleParticleType type, ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
-            return new BloodSplatParticle(level, x, y, z, sprites);
+            return new BloodSplatParticle(level, x, y, z, xd, sprites);
         }
     }
 }

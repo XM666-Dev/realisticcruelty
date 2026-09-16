@@ -45,4 +45,8 @@ public class VectorMath {
     public static Vec3 reflect(Vec3 direction, Vec3 normal) {
         return direction.subtract(normal.scale(direction.dot(normal) * 2.0));
     }
+
+    public static Vec3 abs(Vec3 vector) {
+        return new Vec3(Math.abs(vector.x), Math.abs(vector.y), Math.abs(vector.z));
+    }
 }
