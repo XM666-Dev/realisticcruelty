@@ -11,7 +11,11 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
+
+import java.util.List;
 
 public class BloodSplatParticle extends TextureSheetParticle {
     private static final Quaternionf UP = new Quaternionf().rotateX(-Mth.HALF_PI);
@@ -21,8 +25,19 @@ public class BloodSplatParticle extends TextureSheetParticle {
     private BloodSplatParticle(ClientLevel level, double x, double y, double z, SpriteSet sprites) {
         super(level, x, y, z);
         this.lifetime = 100;
+        this.hasPhysics = false;
         this.quadSize = 0.5F;
         this.pickSprite(sprites);
+    }
+
+    @Override
+    public void tick() {
+        super.tick();
+        var velocity = new Vec3(0.0, -1.0, 0.0);
+        var movement = Entity.collideBoundingBox(null, velocity, this.getBoundingBox(), this.level, List.of());
+        if (movement.y < 0.0) {
+            remove();
+        }
     }
 
     @Override
