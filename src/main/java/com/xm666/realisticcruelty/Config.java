@@ -1,11 +1,16 @@
 package com.xm666.realisticcruelty;
 
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.ModConfigSpec;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Mod(RealisticCruelty.MODID)
 public class Config {
@@ -77,16 +82,98 @@ public class Config {
     public static final ModConfigSpec.IntValue BLOOD_SPLASH_COUNT_MAX = BUILDER
             .defineInRange("blood_splash_count_max", 4, 0, Integer.MAX_VALUE);
 
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> GORE_BLACKLIST = BUILDER
+            .defineList("gore_blacklist", new ArrayList<>(), () -> "", Config::isValidEntity);
+
+    public static final ModConfigSpec.BooleanValue GORE_USE_WHITELIST = BUILDER
+            .define("gore_use_whitelist", false);
+
+    public static final ModConfigSpec.IntValue GORE_COLOR_DEFAULT = BUILDER
+            .defineInRange("gore_color_default", 0x991F1F, 0, Integer.MAX_VALUE);
+
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> GORE_COLORS = BUILDER
+            .defineList("gore_colors", new ArrayList<>(), () -> "", Config::isValidEntityColor);
+
+    public static final ModConfigSpec.ConfigValue<List<? extends String>> GORE_TEXTURE_ITEMS = BUILDER
+            .defineList("gore_texture_items", new ArrayList<>(), () -> "", Config::isValidEntityItem);
+
+    public static final ModConfigSpec.ConfigValue<String> BLOOD_SOUND = BUILDER
+            .define("blood_sound", "block.beehive.drip");
+
     public static final ModConfigSpec.DoubleValue BLOOD_VOLUME_MULTIPLIER = BUILDER
             .defineInRange("blood_volume_multiplier", 1.0, 0.0, Double.MAX_VALUE);
 
+    public static final ModConfigSpec.ConfigValue<String> BLOOD_SPLASH_SOUND = BUILDER
+            .define("blood_splash_sound", "block.beehive.drip");
+
     public static final ModConfigSpec.DoubleValue BLOOD_SPLASH_VOLUME_MULTIPLIER = BUILDER
             .defineInRange("blood_splash_volume_multiplier", 0.5, 0.0, Double.MAX_VALUE);
+
+    public static final ModConfigSpec.ConfigValue<String> FRAGMENT_SOUND = BUILDER
+            .define("fragment_sound", "block.dripstone_block.fall");
+
+    public static final ModConfigSpec.DoubleValue FRAGMENT_VOLUME_MULTIPLIER = BUILDER
+            .defineInRange("fragment_volume_multiplier", 1.0, 0.0, Double.MAX_VALUE);
 
     private static final ModConfigSpec SPEC = BUILDER.build();
 
     public Config(ModContainer container) {
         container.registerConfig(ModConfig.Type.COMMON, SPEC);
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
+    }
+
+    public static String[] splitPair(String string) {
+        var index = string.indexOf(',');
+        var first = string.substring(0, index);
+        var second = string.substring(index + 1);
+        return new String[]{first, second};
+    }
+
+    private static boolean isValidEntity(Object object) {
+        try {
+            var path = (String) object;
+            var key = ResourceLocation.parse(path);
+            return BuiltInRegistries.ENTITY_TYPE.containsKey(key);
+        } catch (Exception exception) {
+            return false;
+        }
+    }
+
+    private static boolean isValidItem(Object object) {
+        try {
+            var path = (String) object;
+            var key = ResourceLocation.parse(path);
+            return BuiltInRegistries.ITEM.containsKey(key);
+        } catch (Exception exception) {
+            return false;
+        }
+    }
+
+    private static boolean isValidEntityColor(Object object) {
+        try {
+            var pair = (String) object;
+            var strings = splitPair(pair);
+            var entity = strings[0];
+            if (!isValidEntity(entity)) return false;
+
+            Integer.parseInt(strings[1]);
+            return true;
+        } catch (Exception exception) {
+            return false;
+        }
+    }
+
+    private static boolean isValidEntityItem(Object object) {
+        try {
+            var pair = (String) object;
+            var strings = splitPair(pair);
+            var entity = strings[0];
+            if (!isValidEntity(entity)) return false;
+
+            var texture = strings[1];
+            return isValidItem(texture);
+        } catch (Exception exception) {
+            return false;
+        }
     }
 }

@@ -5,30 +5,43 @@ import com.xm666.realisticcruelty.math.Random;
 import com.xm666.realisticcruelty.network.HitInfo;
 import com.xm666.realisticcruelty.particle.ParticleTypes;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.particles.ColorParticleOption;
+import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.Vec3;
 
 public class ParticleHandler {
-    public static void gore(HitInfo hitInfo, float amount) {
+    public static void gore(HitInfo hitInfo, float amount, int color, Item item) {
         var amountSqrt = Math.sqrt(amount);
         var bloodSpeed = getBloodSpeed(amountSqrt);
         var bloodSpeedMin = getBloodSpeedMin(bloodSpeed, hitInfo);
         var bloodSpeedMax = getBloodSpeedMax(bloodSpeed, hitInfo);
         var bloodAmount = getBloodAmount(amount);
+        var blood = getBlood(color, item);
         while (bloodAmount >= 1 || bloodAmount > 0 && Random.nextFloat() < bloodAmount) {
             var transform = hitInfo.getParticleTransform();
             var position = transform.position();
             var speed = Random.nextDouble(bloodSpeedMin, bloodSpeedMax);
             var velocity = transform.rotation().scale(speed);
-            addParticle(ParticleTypes.BLOOD.get(), position, velocity);
+            addParticle(blood, position, velocity);
             --bloodAmount;
         }
 
-        if (!hitInfo.isParticleFogEnabled()) return;
+        if (!hitInfo.isParticleFogEnabled() || item != Items.AIR) return;
 
         var hitPosition = hitInfo.getHitPosition();
         var bloodFogSize = getBloodFogSize(amountSqrt);
-        addParticle(ParticleTypes.BLOOD_FOG.get(), hitPosition, new Vec3(bloodFogSize, 0.0, 0.0));
+        var bloodFog = ColorParticleOption.create(ParticleTypes.BLOOD_FOG.get(), color);
+        addParticle(bloodFog, hitPosition, new Vec3(bloodFogSize, 0.0, 0.0));
+    }
+
+    public static ParticleOptions getBlood(int color, Item item) {
+        if (item == Items.AIR) return ColorParticleOption.create(ParticleTypes.BLOOD.get(), color);
+
+        return new ItemParticleOption(ParticleTypes.FRAGMENT.get(), new ItemStack(item));
     }
 
     public static float getBloodAmount(float amount) {
