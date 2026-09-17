@@ -71,13 +71,12 @@ public class BloodSplatParticle extends TextureSheetParticle {
         var mc = Minecraft.getInstance();
         var gameRenderer = mc.gameRenderer;
         var camera = gameRenderer.getMainCamera();
-        var cameraPosition = camera.getPosition();
-        var distance = cameraPosition.distanceTo(getPos());
-        var offsetLength = Math.sqrt(distance) * 0.001;
+        var distance = camera.getPosition().distanceTo(this.getPos());
+        var offsetLength = Math.sqrt(distance) * 0.01;
         if (this.rotation == Direction.DOWN) {
-            offsetLength -= getBoundingBox().getYsize();
+            offsetLength -= this.bbHeight;
         } else if (this.rotation != Direction.UP) {
-            offsetLength -= getBoundingBox().getYsize() * 0.5;
+            offsetLength -= this.bbHeight * 0.5;
         }
         var offset = this.getDirectionVector().scale(offsetLength);
         x = (float) (x + offset.x);

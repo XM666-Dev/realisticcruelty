@@ -27,8 +27,7 @@ public abstract class HitInfo {
 
         public Ray(AABB targetBoundingBox, Vec3 sourcePosition, Vec3 sourceDirection) {
             var destinationPosition = sourcePosition.add(sourceDirection);
-            var hitPoint = ClipHandler.expandedClip(targetBoundingBox, sourcePosition, destinationPosition).orElse(sourcePosition);
-            hitPosition = VectorMath.clamp(hitPoint, targetBoundingBox);
+            hitPosition = ClipHandler.expandedClip(targetBoundingBox, sourcePosition, destinationPosition);
             particleDirection = sourceDirection.reverse();
         }
 
@@ -109,8 +108,17 @@ public abstract class HitInfo {
             this.targetBoundingBox = targetBoundingBox;
             this.sourcePosition = sourcePosition;
             hitPosition = VectorMath.clamp(sourcePosition, targetBoundingBox);
-            hitDirection = VectorMath.directionTo(sourcePosition, hitPosition);
+            hitDirection = getHitDirection();
             particleDirection = hitDirection.reverse();
+        }
+
+        private Vec3 getHitDirection() {
+            if (!sourcePosition.equals(hitPosition)) return VectorMath.directionTo(sourcePosition, hitPosition);
+
+            var targetCenter = targetBoundingBox.getCenter();
+            if (!targetCenter.equals(sourcePosition)) return VectorMath.directionTo(sourcePosition, targetCenter);
+
+            return new Vec3(0.0, -1.0, 0.0);
         }
 
         @Override
@@ -124,8 +132,7 @@ public abstract class HitInfo {
             var rotationAngle = Random.nextAngle(spreadDegrees);
             var hitRotation = VectorMath.randomRotate(hitDirection, rotationAngle);
             var destinationPosition = sourcePosition.add(hitRotation);
-            var hitPoint = ClipHandler.expandedClip(targetBoundingBox, sourcePosition, destinationPosition).orElse(sourcePosition);
-            var particlePosition = VectorMath.clamp(hitPoint, targetBoundingBox);
+            var particlePosition = ClipHandler.expandedClip(targetBoundingBox, sourcePosition, destinationPosition);
             var particleRotation = VectorMath.reflect(hitRotation, particleDirection);
             return new Transform(particlePosition, particleRotation);
         }

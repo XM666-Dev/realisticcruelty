@@ -9,7 +9,6 @@ import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Mod(RealisticCruelty.MODID)
@@ -83,7 +82,7 @@ public class Config {
             .defineInRange("blood_splash_count_max", 4, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>> GORE_BLACKLIST = BUILDER
-            .defineList("gore_blacklist", new ArrayList<>(), () -> "", Config::isValidEntity);
+            .defineList("gore_blacklist", List.of(), () -> "", Config::isValidEntity);
 
     public static final ModConfigSpec.BooleanValue GORE_USE_WHITELIST = BUILDER
             .define("gore_use_whitelist", false);
@@ -92,10 +91,28 @@ public class Config {
             .defineInRange("gore_color_default", 0x991F1F, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>> GORE_COLORS = BUILDER
-            .defineList("gore_colors", new ArrayList<>(), () -> "", Config::isValidEntityColor);
+            .defineList("gore_colors", List.of(
+                    "slime,0x5c993d",
+                    "magma_cube,0x99471f",
+                    "enderman,0x4d1f4d",
+                    "endermite,0x4d1f4d",
+                    "warden,0x144b66",
+                    "glow_squid,0x33ffcc"
+            ), () -> "", Config::isValidEntityColor);
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>> GORE_TEXTURE_ITEMS = BUILDER
-            .defineList("gore_texture_items", new ArrayList<>(), () -> "", Config::isValidEntityItem);
+            .defineList("gore_texture_items", List.of(
+                    "skeleton,bone",
+                    "skeleton_horse,bone",
+                    "wither_skeleton,coal",
+                    "stray,bone",
+                    "bogged,bone",
+                    "blaze,blaze_rod",
+                    "breeze,breeze_rod",
+                    "shulker,shulker_shell",
+                    "iron_golem,iron_nugget",
+                    "snow_golem,snowball"
+            ), () -> "", Config::isValidEntityItem);
 
     public static final ModConfigSpec.ConfigValue<String> BLOOD_SOUND = BUILDER
             .define("blood_sound", "block.beehive.drip");
@@ -156,7 +173,7 @@ public class Config {
             var entity = strings[0];
             if (!isValidEntity(entity)) return false;
 
-            Integer.parseInt(strings[1]);
+            Integer.decode(strings[1]);
             return true;
         } catch (Exception exception) {
             return false;

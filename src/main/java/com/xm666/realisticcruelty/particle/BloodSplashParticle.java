@@ -12,7 +12,6 @@ import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.util.Mth;
 
 public class BloodSplashParticle extends TextureSheetParticle {
     private static final InverseFunction FADE_IN = new InverseFunction(0.9F, 0.8F, true);
@@ -40,7 +39,7 @@ public class BloodSplashParticle extends TextureSheetParticle {
                 var bloodSplashSound = Config.BLOOD_SPLASH_SOUND.get();
                 var bloodSplashVolumeMultiplier = Config.BLOOD_SPLASH_VOLUME_MULTIPLIER.get().floatValue();
                 var sound = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse(bloodSplashSound));
-                var volume = Mth.randomBetween(this.random, 0.3F, 1.0F) * bloodSplashVolumeMultiplier;
+                var volume = Random.nextFloat(0.3F, 1.0F) * bloodSplashVolumeMultiplier;
                 this.level.playLocalSound(this.x, this.y, this.z, sound, SoundSource.BLOCKS, volume, 1.0F, false);
             }
         }

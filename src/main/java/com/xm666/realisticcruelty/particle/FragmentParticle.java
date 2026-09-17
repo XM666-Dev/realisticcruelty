@@ -20,20 +20,22 @@ import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.Quaternionf;
 
 public class FragmentParticle extends GoreParticle {
-    private final float rotAngle;
+    private final float rotAngleFrom;
+    private final float rotAngleTo;
 
     private FragmentParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, ItemStack stack) {
         super(level, x, y, z, xd, yd, zd);
         this.quadSize = 0.2F;
-        this.roll = Random.nextFloat(Mth.TWO_PI);
-        this.oRoll = this.roll;
-        this.rotAngle = this.getRotAngle();
+        this.rotAngleFrom = Random.nextFloat(Mth.TWO_PI);
+        this.rotAngleTo = getRotAngleTo();
+        this.oRoll = this.rotAngleFrom;
+        this.roll = this.rotAngleFrom;
         this.setSprite(this.getSprites(stack));
     }
 
-    private float getRotAngle() {
-        var rotAngleMax = Mth.DEG_TO_RAD * 3600.0F;
-        return Random.nextFloat(-rotAngleMax, rotAngleMax);
+    private float getRotAngleTo() {
+        var rotAngle = Mth.DEG_TO_RAD * 3600.0F;
+        return this.rotAngleFrom + Random.nextFloat(-rotAngle, rotAngle);
     }
 
     private TextureAtlasSprite getSprites(ItemStack stack) {
@@ -51,7 +53,8 @@ public class FragmentParticle extends GoreParticle {
         var end = this.lifetime + 1 - 10;
         if (this.age >= end) return;
 
-        this.roll = FADE_IN.apply((float) this.age / end) * rotAngle;
+        var delta = FADE_IN.apply((float) this.age / end);
+        this.roll = Mth.lerp(delta, this.rotAngleFrom, this.rotAngleTo);
     }
 
     @Override

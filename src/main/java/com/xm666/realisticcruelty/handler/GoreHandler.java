@@ -87,7 +87,7 @@ public class GoreHandler {
         for (var pair : Config.GORE_COLORS.get()) {
             var strings = Config.splitPair(pair);
             var entity = ResourceLocation.parse(strings[0]);
-            var color = Integer.parseInt(strings[1]);
+            var color = Integer.decode(strings[1]);
             if (livingEntity.equals(entity)) return color;
         }
 
