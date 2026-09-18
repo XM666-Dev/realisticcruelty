@@ -32,9 +32,9 @@ public class VectorMath {
     }
 
     public static Vec3 clamp(Vec3 point, AABB aabb) {
-        var x = Math.clamp(point.x, aabb.minX, aabb.maxX);
-        var y = Math.clamp(point.y, aabb.minY, aabb.maxY);
-        var z = Math.clamp(point.z, aabb.minZ, aabb.maxZ);
+        var x = Mth.clamp(point.x, aabb.minX, aabb.maxX);
+        var y = Mth.clamp(point.y, aabb.minY, aabb.maxY);
+        var z = Mth.clamp(point.z, aabb.minZ, aabb.maxZ);
         return new Vec3(x, y, z);
     }
 
@@ -48,5 +48,13 @@ public class VectorMath {
 
     public static Vec3 abs(Vec3 vector) {
         return new Vec3(Math.abs(vector.x), Math.abs(vector.y), Math.abs(vector.z));
+    }
+
+    public static Vec3 getMinPosition(AABB aabb) {
+        return new Vec3(aabb.minX, aabb.minY, aabb.minZ);
+    }
+
+    public static Vec3 getMaxPosition(AABB aabb) {
+        return new Vec3(aabb.maxX, aabb.maxY, aabb.maxZ);
     }
 }

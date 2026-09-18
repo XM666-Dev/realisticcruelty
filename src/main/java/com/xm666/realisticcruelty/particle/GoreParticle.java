@@ -4,14 +4,13 @@ import com.xm666.realisticcruelty.math.CollisionHandler;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
 
-public class GoreParticle extends TextureSheetParticle {
+public class GoreParticle extends ExtendedTextureSheetParticle {
     protected static final InverseFunction FADE_IN = new InverseFunction(0.9F, 0.8F, true);
     protected static final InverseFunction FADE_OUT = new InverseFunction(0.9F, 0.2F, false);
     private static final double MAXIMUM_COLLISION_VELOCITY_SQUARED = Mth.square(100.0);

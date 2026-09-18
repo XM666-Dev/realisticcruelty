@@ -9,9 +9,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
@@ -19,7 +17,7 @@ import org.joml.Vector3f;
 
 import java.util.List;
 
-public class BloodSplatParticle extends TextureSheetParticle {
+public class BloodSplatParticle extends ExtendedTextureSheetParticle {
     private static final InverseFunction FADE_IN = new InverseFunction(0.9F, 0.8F, true);
     private static final InverseFunction FADE_OUT = new InverseFunction(0.9F, 0.2F, false);
     private final Direction rotation;
@@ -90,7 +88,7 @@ public class BloodSplatParticle extends TextureSheetParticle {
     }
 
     private Quaternionf getDirectionQuaternion() {
-        return new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, 1.0F), this.rotation.step());
+        return new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, -1.0F), this.rotation.step());
     }
 
     public record Provider(SpriteSet sprites) implements ParticleProvider<ColorParticleOption> {

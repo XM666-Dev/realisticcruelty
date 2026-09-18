@@ -7,12 +7,10 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
-import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.util.Mth;
 import org.joml.Quaternionf;
 
-public class BloodFogParticle extends TextureSheetParticle {
+public class BloodFogParticle extends ExtendedTextureSheetParticle {
     private static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
     private final Quaternionf rotation;
 

@@ -57,7 +57,7 @@ public enum HitType {
     public static HitType get(DamageSource damageSource) {
         if (damageSource.is(DamageTypeTags.IS_EXPLOSION)) {
             return HitType.EXPLOSION;
-        } else if (damageSource.isDirect()) {
+        } else if (!damageSource.isIndirect()) {
             return HitType.MELEE;
         }
         return HitType.PROJECTILE;
