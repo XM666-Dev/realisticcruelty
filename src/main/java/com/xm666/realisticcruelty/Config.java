@@ -8,6 +8,7 @@ import net.minecraftforge.fml.config.ConfigTracker;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
@@ -22,6 +23,9 @@ public class Config {
 
     public static final ForgeConfigSpec.DoubleValue BLOOD_AMOUNT_MAX = BUILDER
             .defineInRange("blood_amount_max", 16.0, 0.0, Double.MAX_VALUE);
+
+    public static final ForgeConfigSpec.DoubleValue BLOOD_AMOUNT_ADDITION = BUILDER
+            .defineInRange("blood_amount_addition", -0.5, Double.MIN_VALUE, Double.MAX_VALUE);
 
     public static final ForgeConfigSpec.DoubleValue BLOOD_SPEED_FACTOR = BUILDER
             .defineInRange("blood_speed_factor", 0.3, 0.0, Double.MAX_VALUE);
