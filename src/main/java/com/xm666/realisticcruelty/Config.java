@@ -8,7 +8,6 @@ import net.minecraftforge.fml.config.ConfigTracker;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
