@@ -16,10 +16,13 @@ public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     public static final ModConfigSpec.DoubleValue BLOOD_AMOUNT_FACTOR = BUILDER
-            .defineInRange("blood_amount_factor", 0.5, 0.0, Double.MAX_VALUE);
+            .defineInRange("blood_amount_factor", 1.0, 0.0, Double.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue BLOOD_AMOUNT_MAX = BUILDER
             .defineInRange("blood_amount_max", 16.0, 0.0, Double.MAX_VALUE);
+
+    public static final ModConfigSpec.DoubleValue BLOOD_AMOUNT_ADDITION = BUILDER
+            .defineInRange("blood_amount_addition", -0.5, Double.MIN_VALUE, Double.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue BLOOD_SPEED_FACTOR = BUILDER
             .defineInRange("blood_speed_factor", 0.3, 0.0, Double.MAX_VALUE);
