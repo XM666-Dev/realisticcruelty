@@ -7,6 +7,7 @@ import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.config.ConfigTracker;
 import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
+import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.lang.reflect.InvocationTargetException;
@@ -139,8 +140,8 @@ public class Config {
 
     private static final ForgeConfigSpec SPEC = BUILDER.build();
 
-    public static void init(ModContainer container) {
-        registerConfig(ModConfig.Type.COMMON, SPEC, container);
+    public static void init(FMLJavaModLoadingContext context) {
+        context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
     }
 
     public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec, ModContainer container) {
