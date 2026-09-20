@@ -25,22 +25,22 @@ public class Config {
             .defineInRange("blood_amount_addition", -0.5, Double.MIN_VALUE, Double.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue BLOOD_SPEED_FACTOR = BUILDER
-            .defineInRange("blood_speed_factor", 0.3, 0.0, Double.MAX_VALUE);
+            .defineInRange("blood_speed_factor", 0.2, 0.0, Double.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue BLOOD_SPEED_MAX = BUILDER
-            .defineInRange("blood_speed_max", 1.5, 0.0, Double.MAX_VALUE);
+            .defineInRange("blood_speed_max", 1.0, 0.0, Double.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue BLOOD_MELEE_SPEED_MIN_MULTIPLIER = BUILDER
-            .defineInRange("blood_melee_speed_min_multiplier", 0.1, 0.0, Double.MAX_VALUE);
+            .defineInRange("blood_melee_speed_min_multiplier", 0.0, 0.0, Double.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue BLOOD_MELEE_SPEED_MAX_MULTIPLIER = BUILDER
-            .defineInRange("blood_melee_speed_max_multiplier", 0.4, 0.0, Double.MAX_VALUE);
+            .defineInRange("blood_melee_speed_max_multiplier", 0.5, 0.0, Double.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue BLOOD_MELEE_SPREAD_DEGREES = BUILDER
             .defineInRange("blood_melee_spread_degrees", 90.0, 0.0, Double.MAX_VALUE);
 
     public static final ModConfigSpec.BooleanValue BLOOD_MELEE_FOG_ENABLED = BUILDER
-            .define("blood_melee_fog_enabled", false);
+            .define("blood_melee_fog_enabled", true);
 
     public static final ModConfigSpec.DoubleValue BLOOD_PROJECTILE_SPEED_MIN_MULTIPLIER = BUILDER
             .defineInRange("blood_projectile_speed_min_multiplier", 0.5, 0.0, Double.MAX_VALUE);
@@ -70,7 +70,7 @@ public class Config {
             .define("blood_splat_enabled", true);
 
     public static final ModConfigSpec.IntValue BLOOD_SPLAT_LIFETIME = BUILDER
-            .defineInRange("blood_splat_lifetime", 80, 0, Integer.MAX_VALUE);
+            .defineInRange("blood_splat_lifetime", 100, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.DoubleValue BLOOD_FOG_SIZE_FACTOR = BUILDER
             .defineInRange("blood_fog_size_factor", 0.5, 0.0, Double.MAX_VALUE);
@@ -82,7 +82,7 @@ public class Config {
             .defineInRange("blood_splash_count_min", 2, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.IntValue BLOOD_SPLASH_COUNT_MAX = BUILDER
-            .defineInRange("blood_splash_count_max", 4, 0, Integer.MAX_VALUE);
+            .defineInRange("blood_splash_count_max", 3, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>> GORE_BLACKLIST = BUILDER
             .defineList("gore_blacklist", List.of(), () -> "", Config::isValidEntity);

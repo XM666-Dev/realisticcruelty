@@ -24,7 +24,7 @@ public class FragmentParticle extends GoreParticle {
     private final float rotAngleTo;
 
     private FragmentParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, ItemStack stack) {
-        super(level, x, y, z, xd, yd, zd);
+        super(level, x, y, z, xd, yd, zd, 5, 20);
         this.quadSize = 0.2F;
         this.rotAngleFrom = Random.nextFloat(Mth.TWO_PI);
         this.rotAngleTo = getRotAngleTo();
@@ -34,7 +34,7 @@ public class FragmentParticle extends GoreParticle {
     }
 
     private float getRotAngleTo() {
-        var rotAngle = Mth.DEG_TO_RAD * 3600.0F;
+        var rotAngle = Mth.DEG_TO_RAD * 900.0F;
         return this.rotAngleFrom + Random.nextFloat(-rotAngle, rotAngle);
     }
 
@@ -50,7 +50,7 @@ public class FragmentParticle extends GoreParticle {
     public void tick() {
         super.tick();
         this.oRoll = this.roll;
-        var end = this.lifetime + 1 - 10;
+        var end = this.lifetime + 1 - endDuration;
         if (this.age >= end) return;
 
         var delta = FADE_IN.apply((float) this.age / end);
@@ -60,6 +60,8 @@ public class FragmentParticle extends GoreParticle {
     @Override
     protected void onCollided(Direction normal) {
         var fragmentSound = Config.FRAGMENT_SOUND.get();
+        if (fragmentSound.isEmpty()) return;
+
         var fragmentVolumeMultiplier = Config.FRAGMENT_VOLUME_MULTIPLIER.get().floatValue();
         var sound = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse(fragmentSound));
         var volume = Random.nextFloat(0.3F, 1.0F) * fragmentVolumeMultiplier;
@@ -70,7 +72,7 @@ public class FragmentParticle extends GoreParticle {
     public float getQuadSize(float partialTick) {
         var tick = this.age + partialTick;
         var size = new float[]{this.quadSize};
-        ParticleProcess.apply(tick, 5, 10, this.lifetime + 1,
+        ParticleProcess.apply(tick, this.startDuration, this.endDuration, this.lifetime + 1,
                 (f) -> size[0] *= FADE_IN.apply(f),
                 () -> {
                 },
