@@ -4,6 +4,7 @@ import com.xm666.realisticcruelty.math.CollisionHandler;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -11,14 +12,18 @@ import net.minecraft.world.phys.Vec3;
 import java.util.List;
 
 public class GoreParticle extends ExtendedTextureSheetParticle {
-    protected static final InverseFunction FADE_IN = new InverseFunction(0.9F, 0.8F, true);
-    protected static final InverseFunction FADE_OUT = new InverseFunction(0.9F, 0.2F, false);
+    protected static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
+    protected static final InverseFunction FADE_OUT = new InverseFunction(0.2F, 0.2F, false);
     private static final double MAXIMUM_COLLISION_VELOCITY_SQUARED = Mth.square(100.0);
+    protected final int startDuration;
+    protected final int endDuration;
     private boolean stoppedByCollision;
 
-    protected GoreParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
+    protected GoreParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, int startDuration, int endDuration) {
         super(level, x, y, z);
         this.lifetime = 60;
+        this.startDuration = startDuration;
+        this.endDuration = endDuration;
         this.gravity = 1.5F;
         this.friction = 0.95F;
         this.quadSize = 0.1F;
@@ -62,7 +67,7 @@ public class GoreParticle extends ExtendedTextureSheetParticle {
             }
         }
         if (normal != null) {
-            var end = this.lifetime + 1 - 10;
+            var end = this.lifetime + 1 - endDuration;
             if (this.age >= end) return;
 
             this.age = end;

@@ -12,7 +12,7 @@ import net.minecraft.sounds.SoundSource;
 
 public class BloodParticle extends GoreParticle {
     private BloodParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, float r, float g, float b, SpriteSet sprites) {
-        super(level, x, y, z, xd, yd, zd);
+        super(level, x, y, z, xd, yd, zd, 5, 10);
         this.rCol = r;
         this.gCol = g;
         this.bCol = b;
@@ -36,6 +36,8 @@ public class BloodParticle extends GoreParticle {
         }
 
         var bloodSound = Config.BLOOD_SOUND.get();
+        if (bloodSound.isEmpty()) return;
+
         var bloodVolumeMultiplier = Config.BLOOD_VOLUME_MULTIPLIER.get().floatValue();
         var sound = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse(bloodSound));
         var volume = Random.nextFloat(0.3F, 1.0F) * bloodVolumeMultiplier;
@@ -46,7 +48,7 @@ public class BloodParticle extends GoreParticle {
     public float getQuadSize(float partialTick) {
         var tick = this.age + partialTick;
         var size = new float[]{this.quadSize};
-        ParticleProcess.apply(tick, 5, 10, this.lifetime + 1,
+        ParticleProcess.apply(tick, this.startDuration, this.endDuration, this.lifetime + 1,
                 (f) -> this.alpha = FADE_IN.apply(f),
                 () -> this.alpha = 1.0F,
                 (f) -> size[0] *= FADE_OUT.apply(f)

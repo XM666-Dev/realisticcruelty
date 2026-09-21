@@ -22,7 +22,7 @@ public class BloodFogParticle extends ExtendedTextureSheetParticle {
         this.rCol = r;
         this.gCol = g;
         this.bCol = b;
-        this.pickSprite(sprites);
+        this.setSprite(sprites.get(Math.min((int) (xd * 2.0), 4), 4));
     }
 
     private Quaternionf getRotation() {
@@ -35,8 +35,8 @@ public class BloodFogParticle extends ExtendedTextureSheetParticle {
     @Override
     public float getQuadSize(float partialTick) {
         var tick = this.age + partialTick;
-        var size = BloodFogParticle.FADE_IN.apply(tick / (this.lifetime + 1));
-        this.alpha = size < 0.8F ? 1.0F : (1.0F - size) / 0.2F;
+        var size = FADE_IN.apply(tick / (this.lifetime + 1));
+        this.alpha = Mth.clampedMap(size, 0.8F, 1.0F, 1.0F, 0.0F);
         return this.quadSize * size;
     }
 

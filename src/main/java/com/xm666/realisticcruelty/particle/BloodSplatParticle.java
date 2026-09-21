@@ -9,7 +9,9 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
@@ -18,13 +20,17 @@ import org.joml.Vector3f;
 import java.util.List;
 
 public class BloodSplatParticle extends ExtendedTextureSheetParticle {
-    private static final InverseFunction FADE_IN = new InverseFunction(0.9F, 0.8F, true);
-    private static final InverseFunction FADE_OUT = new InverseFunction(0.9F, 0.2F, false);
+    private static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
+    private static final InverseFunction FADE_OUT = new InverseFunction(0.2F, 0.6F, false);
     private final Direction rotation;
+    private final int startDuration;
+    private final int endDuration;
 
     private BloodSplatParticle(ClientLevel level, double x, double y, double z, double xd, float r, float g, float b, SpriteSet sprites) {
         super(level, x, y, z);
         this.lifetime = Config.BLOOD_SPLAT_LIFETIME.get();
+        this.startDuration = 10;
+        this.endDuration = 40;
         this.hasPhysics = false;
         this.quadSize = 0.5F;
         this.rotation = Direction.values()[(int) xd];
@@ -46,7 +52,7 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
     @Override
     public float getQuadSize(float partialTick) {
         var tick = this.age + partialTick;
-        ParticleProcess.apply(tick, 10, 20, this.lifetime + 1,
+        ParticleProcess.apply(tick, this.startDuration, this.endDuration, this.lifetime + 1,
                 (f) -> this.alpha = FADE_IN.apply(f),
                 () -> this.alpha = 1.0F,
                 (f) -> this.alpha = FADE_OUT.apply(f)
@@ -88,7 +94,7 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
     }
 
     private Quaternionf getDirectionQuaternion() {
-        return new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, -1.0F), this.rotation.step());
+        return new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, 1.0F), this.rotation.step());
     }
 
     public record Provider(SpriteSet sprites) implements ParticleProvider<ColorParticleOption> {
