@@ -1,6 +1,5 @@
 package com.xm666.realisticcruelty.particle;
 
-
 import com.mojang.brigadier.StringReader;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;

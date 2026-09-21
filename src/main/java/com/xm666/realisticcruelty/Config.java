@@ -3,17 +3,10 @@ package com.xm666.realisticcruelty;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.common.ForgeConfigSpec;
-import net.minecraftforge.fml.ModContainer;
-import net.minecraftforge.fml.config.ConfigTracker;
-import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import net.minecraftforge.fml.loading.FMLPaths;
 
-import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Path;
 import java.util.List;
-import java.util.Locale;
 
 public class Config {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
@@ -88,7 +81,7 @@ public class Config {
             .defineInRange("blood_splash_count_max", 3, 0, Integer.MAX_VALUE);
 
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> GORE_BLACKLIST = BUILDER
-            .defineList("gore_blacklist", List.of(),  Config::isValidEntity);
+            .defineList("gore_blacklist", List.of(), Config::isValidEntity);
 
     public static final ForgeConfigSpec.BooleanValue GORE_USE_WHITELIST = BUILDER
             .define("gore_use_whitelist", false);
@@ -104,7 +97,7 @@ public class Config {
                     "endermite,0x4d1f4d",
                     "warden,0x144b66",
                     "glow_squid,0x33ffcc"
-            ),  Config::isValidEntityColor);
+            ), Config::isValidEntityColor);
 
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> GORE_TEXTURE_ITEMS = BUILDER
             .defineList("gore_texture_items", List.of(
@@ -118,7 +111,7 @@ public class Config {
                     "shulker,shulker_shell",
                     "iron_golem,iron_nugget",
                     "snow_golem,snowball"
-            ),  Config::isValidEntityItem);
+            ), Config::isValidEntityItem);
 
     public static final ForgeConfigSpec.ConfigValue<String> BLOOD_SOUND = BUILDER
             .define("blood_sound", "block.beehive.drip");
