@@ -12,16 +12,17 @@ import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
 
 public class BloodSplashParticle extends TextureSheetParticle {
     private static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
-    private static final InverseFunction FADE_OUT = new InverseFunction(0.1F, 0.1F, false);
+    private static final InverseFunction FADE_OUT = new InverseFunction(0.2F, 0.2F, false);
     private final int startDuration;
     private final int endDuration;
 
     private BloodSplashParticle(ClientLevel level, double x, double y, double z, float r, float g, float b, SpriteSet sprites) {
         super(level, x, y, z);
-        this.lifetime = 20;
+        this.lifetime = 30;
         this.startDuration = 5;
         this.endDuration = 10;
         this.gravity = 1.0F;
@@ -59,7 +60,10 @@ public class BloodSplashParticle extends TextureSheetParticle {
                 (f) -> size[0] *= FADE_IN.apply(f),
                 () -> {
                 },
-                (f) -> this.alpha = FADE_OUT.apply(f)
+                (f) -> {
+                    this.alpha = FADE_OUT.apply(f);
+                    size[0] *= Mth.map(this.alpha, 1.0F, 0.0F, 1.0F, 2.0F);
+                }
         );
         return size[0];
     }

@@ -21,7 +21,7 @@ import java.util.List;
 
 public class BloodSplatParticle extends TextureSheetParticle {
     private static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
-    private static final InverseFunction FADE_OUT = new InverseFunction(0.9F, 0.9F, false);
+    private static final InverseFunction FADE_OUT = new InverseFunction(0.2F, 0.6F, false);
     private final Direction rotation;
     private final int startDuration;
     private final int endDuration;
@@ -30,7 +30,7 @@ public class BloodSplatParticle extends TextureSheetParticle {
         super(level, x, y, z);
         this.lifetime = Config.BLOOD_SPLAT_LIFETIME.get();
         this.startDuration = 10;
-        this.endDuration = 20;
+        this.endDuration = 40;
         this.hasPhysics = false;
         this.quadSize = 0.5F;
         this.rotation = Direction.values()[(int) xd];

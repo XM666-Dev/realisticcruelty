@@ -34,7 +34,7 @@ public class FragmentParticle extends GoreParticle {
     }
 
     private float getRotAngleTo() {
-        var rotAngle = Mth.DEG_TO_RAD * 900.0F;
+        var rotAngle = Mth.TWO_PI * 2.0F;
         return this.rotAngleFrom + Random.nextFloat(-rotAngle, rotAngle);
     }
 
