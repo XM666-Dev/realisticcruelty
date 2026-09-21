@@ -1,7 +1,6 @@
 package com.xm666.realisticcruelty.particle;
 
 import com.mojang.brigadier.StringReader;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
@@ -9,8 +8,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.FastColor;
 
 public class ColorParticleOption implements ParticleOptions {
-    public static final ParticleOptions.Deserializer<ColorParticleOption> DESERIALIZER = new ParticleOptions.Deserializer<ColorParticleOption>() {
-        public ColorParticleOption fromCommand(ParticleType<ColorParticleOption> p_123721_, StringReader p_123722_) throws CommandSyntaxException {
+    public static final ParticleOptions.Deserializer<ColorParticleOption> DESERIALIZER = new ParticleOptions.Deserializer<>() {
+        public ColorParticleOption fromCommand(ParticleType<ColorParticleOption> p_123721_, StringReader p_123722_) {
             return new ColorParticleOption(p_123721_, 0);
         }
 
