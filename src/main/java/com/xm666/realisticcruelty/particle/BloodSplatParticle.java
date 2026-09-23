@@ -31,7 +31,6 @@ public class BloodSplatParticle extends TextureSheetParticle {
         this.lifetime = Config.BLOOD_SPLAT_LIFETIME.get();
         this.startDuration = 10;
         this.endDuration = 40;
-        this.hasPhysics = false;
         this.quadSize = 0.5F;
         this.rotation = Direction.values()[(int) xd];
         this.rCol = r;
@@ -42,6 +41,8 @@ public class BloodSplatParticle extends TextureSheetParticle {
 
     @Override
     public void move(double x, double y, double z) {
+        if (this.age % 10 != 0) return;
+
         var velocity = this.getDirectionVector().reverse();
         var movement = Entity.collideBoundingBox(null, velocity, this.getBoundingBox(), this.level, List.of());
         if (!VectorMath.abs(movement).equals(Vec3.ZERO)) {
