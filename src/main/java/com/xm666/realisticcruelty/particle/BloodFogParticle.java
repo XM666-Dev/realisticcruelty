@@ -24,7 +24,8 @@ public class BloodFogParticle extends TextureSheetParticle {
         this.rCol = r;
         this.gCol = g;
         this.bCol = b;
-        this.setSprite(sprites.get(Math.min((int) (xd * 2.0), 4), 4));
+        this.pickSprite(sprites);
+        //this.setSprite(sprites.get(Math.min((int) (xd * 2.0), 4), 4));
     }
 
     private Quaternionf getRotation() {
