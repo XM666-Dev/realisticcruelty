@@ -72,10 +72,10 @@ public class Config {
             .defineInRange("blood_splat_lifetime", 100, 0, Integer.MAX_VALUE);
 
     public static final ForgeConfigSpec.DoubleValue BLOOD_FOG_SIZE_FACTOR = BUILDER
-            .defineInRange("blood_fog_size_factor", 0.4, 0.0, Double.POSITIVE_INFINITY);
+            .defineInRange("blood_fog_size_factor", 0.3, 0.0, Double.POSITIVE_INFINITY);
 
     public static final ForgeConfigSpec.DoubleValue BLOOD_FOG_SIZE_MAX = BUILDER
-            .defineInRange("blood_fog_size_max", 2.0, 0.0, Double.POSITIVE_INFINITY);
+            .defineInRange("blood_fog_size_max", 1.5, 0.0, Double.POSITIVE_INFINITY);
 
     public static final ForgeConfigSpec.IntValue BLOOD_SPLASH_COUNT_MIN = BUILDER
             .defineInRange("blood_splash_count_min", 2, 0, Integer.MAX_VALUE);
