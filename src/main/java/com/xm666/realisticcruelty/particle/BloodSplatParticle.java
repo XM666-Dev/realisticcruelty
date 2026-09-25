@@ -3,6 +3,7 @@ package com.xm666.realisticcruelty.particle;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.math.InverseFunction;
+import com.xm666.realisticcruelty.math.Random;
 import com.xm666.realisticcruelty.math.VectorMath;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -12,6 +13,7 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ColorParticleOption;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
@@ -25,6 +27,7 @@ public class BloodSplatParticle extends TextureSheetParticle {
     private final Direction rotation;
     private final int startDuration;
     private final int endDuration;
+    private final int roll = Random.nextInt(3);
 
     private BloodSplatParticle(ClientLevel level, double x, double y, double z, double xd, float r, float g, float b, SpriteSet sprites) {
         super(level, x, y, z);
@@ -95,7 +98,9 @@ public class BloodSplatParticle extends TextureSheetParticle {
     }
 
     private Quaternionf getDirectionQuaternion() {
-        return new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, 1.0F), this.rotation.step());
+        var quaternion = new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, 1.0F), this.rotation.step());
+        quaternion.rotateZ(this.roll * Mth.HALF_PI);
+        return quaternion;
     }
 
     public record Provider(SpriteSet sprites) implements ParticleProvider<ColorParticleOption> {
