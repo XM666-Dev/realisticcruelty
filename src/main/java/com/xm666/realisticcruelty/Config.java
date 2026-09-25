@@ -21,13 +21,13 @@ public class Config {
             .defineInRange("blood_amount_addition", -0.5, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
     public static final ForgeConfigSpec.DoubleValue BLOOD_SPEED_FACTOR = BUILDER
-            .defineInRange("blood_speed_factor", 0.2, 0.0, Double.POSITIVE_INFINITY);
+            .defineInRange("blood_speed_factor", 0.3, 0.0, Double.POSITIVE_INFINITY);
 
     public static final ForgeConfigSpec.DoubleValue BLOOD_SPEED_MAX = BUILDER
-            .defineInRange("blood_speed_max", 1.0, 0.0, Double.POSITIVE_INFINITY);
+            .defineInRange("blood_speed_max", 1.5, 0.0, Double.POSITIVE_INFINITY);
 
     public static final ForgeConfigSpec.DoubleValue BLOOD_MELEE_SPEED_MIN_MULTIPLIER = BUILDER
-            .defineInRange("blood_melee_speed_min_multiplier", 0.0, 0.0, Double.POSITIVE_INFINITY);
+            .defineInRange("blood_melee_speed_min_multiplier", 0.2, 0.0, Double.POSITIVE_INFINITY);
 
     public static final ForgeConfigSpec.DoubleValue BLOOD_MELEE_SPEED_MAX_MULTIPLIER = BUILDER
             .defineInRange("blood_melee_speed_max_multiplier", 0.5, 0.0, Double.POSITIVE_INFINITY);
@@ -62,6 +62,9 @@ public class Config {
     public static final ForgeConfigSpec.BooleanValue BLOOD_EXPLOSION_FOG_ENABLED = BUILDER
             .define("blood_explosion_fog_enabled", true);
 
+    public static final ForgeConfigSpec.DoubleValue BLOOD_Z_OFFSET = BUILDER
+            .defineInRange("blood_z_offset", 0.5, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+
     public static final ForgeConfigSpec.BooleanValue BLOOD_SPLAT_ENABLED = BUILDER
             .define("blood_splat_enabled", true);
 
@@ -69,10 +72,10 @@ public class Config {
             .defineInRange("blood_splat_lifetime", 100, 0, Integer.MAX_VALUE);
 
     public static final ForgeConfigSpec.DoubleValue BLOOD_FOG_SIZE_FACTOR = BUILDER
-            .defineInRange("blood_fog_size_factor", 0.5, 0.0, Double.POSITIVE_INFINITY);
+            .defineInRange("blood_fog_size_factor", 0.4, 0.0, Double.POSITIVE_INFINITY);
 
     public static final ForgeConfigSpec.DoubleValue BLOOD_FOG_SIZE_MAX = BUILDER
-            .defineInRange("blood_fog_size_max", 1.5, 0.0, Double.POSITIVE_INFINITY);
+            .defineInRange("blood_fog_size_max", 2.0, 0.0, Double.POSITIVE_INFINITY);
 
     public static final ForgeConfigSpec.IntValue BLOOD_SPLASH_COUNT_MIN = BUILDER
             .defineInRange("blood_splash_count_min", 2, 0, Integer.MAX_VALUE);

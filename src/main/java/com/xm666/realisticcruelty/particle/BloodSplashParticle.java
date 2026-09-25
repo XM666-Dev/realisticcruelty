@@ -29,7 +29,7 @@ public class BloodSplashParticle extends ExtendedTextureSheetParticle {
         this.gCol = g;
         this.bCol = b;
         this.pickSprite(sprites);
-        this.setParticleSpeed(Random.nextDouble(-0.1, 0.1), Random.nextDouble(0.2, 0.3), Random.nextDouble(-0.1, 0.1));
+        this.setParticleSpeed(Random.nextDouble(-0.15, 0.15), Random.nextDouble(0.15, 0.25), Random.nextDouble(-0.15, 0.15));
     }
 
     @Override

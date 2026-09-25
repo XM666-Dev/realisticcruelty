@@ -9,6 +9,11 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public abstract class HitInfo {
+    public static Vec3 addZOffset(Vec3 position, Vec3 direction) {
+        var bloodZOffset = Config.BLOOD_Z_OFFSET.get();
+        return position.add(direction.scale(bloodZOffset));
+    }
+
     public abstract Vec3 getHitPosition();
 
     public abstract Transform getParticleTransform();
@@ -33,7 +38,7 @@ public abstract class HitInfo {
 
         @Override
         public Vec3 getHitPosition() {
-            return hitPosition;
+            return addZOffset(hitPosition, particleDirection);
         }
 
         @Override
@@ -123,7 +128,7 @@ public abstract class HitInfo {
 
         @Override
         public Vec3 getHitPosition() {
-            return hitPosition;
+            return addZOffset(hitPosition, particleDirection);
         }
 
         @Override

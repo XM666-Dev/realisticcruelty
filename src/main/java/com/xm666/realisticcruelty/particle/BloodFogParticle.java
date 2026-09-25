@@ -22,14 +22,16 @@ public class BloodFogParticle extends ExtendedTextureSheetParticle {
         this.rCol = r;
         this.gCol = g;
         this.bCol = b;
-        this.setSprite(sprites.get(Math.min((int) (xd * 2.0), 4), 4));
+        this.pickSprite(sprites);
     }
 
     private Quaternionf getRotation() {
         var mc = Minecraft.getInstance();
         var gameRenderer = mc.gameRenderer;
         var camera = gameRenderer.getMainCamera();
-        return new Quaternionf(camera.rotation()).rotateZ(Random.nextFloat(Mth.TWO_PI));
+        var quaternion = new Quaternionf(camera.rotation());
+        quaternion.rotateZ(Random.nextInt(3) * Mth.HALF_PI);
+        return quaternion;
     }
 
     @Override
