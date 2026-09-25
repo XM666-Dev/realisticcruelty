@@ -11,7 +11,6 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -97,7 +96,7 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
     }
 
     private Quaternionf getDirectionQuaternion() {
-        var quaternion = new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, 1.0F), this.rotation.step());
+        var quaternion = new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, -1.0F), this.rotation.step());
         quaternion.rotateZ(this.roll * Mth.HALF_PI);
         return quaternion;
     }
