@@ -165,7 +165,7 @@ public class Config {
     }
 
     @SubscribeEvent
-    public static void onLoading(ModConfigEvent.Reloading event) {
+    public static void onReloading(ModConfigEvent.Reloading event) {
         load();
     }
 
