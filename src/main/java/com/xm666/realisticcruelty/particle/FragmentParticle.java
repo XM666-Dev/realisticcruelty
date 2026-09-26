@@ -14,6 +14,7 @@ import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.model.data.ModelData;
@@ -25,12 +26,28 @@ public class FragmentParticle extends GoreParticle {
 
     private FragmentParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, ItemStack stack) {
         super(level, x, y, z, xd, yd, zd, 5, 20);
+        var color = stack.getCount();
         this.quadSize = 0.2F;
         this.rotAngleFrom = Random.nextFloat(Mth.TWO_PI);
         this.rotAngleTo = getRotAngleTo();
         this.oRoll = this.rotAngleFrom;
         this.roll = this.rotAngleFrom;
+        this.rCol = getRed(color);
+        this.gCol = getGreen(color);
+        this.bCol = getBlue(color);
         this.setSprite(this.getSprites(stack));
+    }
+
+    private static float getRed(int color) {
+        return (float) FastColor.ARGB32.red(color) / 255.0F;
+    }
+
+    private static float getGreen(int color) {
+        return (float) FastColor.ARGB32.green(color) / 255.0F;
+    }
+
+    private static float getBlue(int color) {
+        return (float) FastColor.ARGB32.blue(color) / 255.0F;
     }
 
     private float getRotAngleTo() {
@@ -41,8 +58,8 @@ public class FragmentParticle extends GoreParticle {
     private TextureAtlasSprite getSprites(ItemStack stack) {
         var mc = Minecraft.getInstance();
         var itemRenderer = mc.getItemRenderer();
-        var model = itemRenderer.getModel(stack, level, null, 0);
-        var bakedModel = model.getOverrides().resolve(model, stack, level, null, 0);
+        var model = itemRenderer.getModel(stack, this.level, null, 0);
+        var bakedModel = model.getOverrides().resolve(model, stack, this.level, null, 0);
         return bakedModel.getParticleIcon(ModelData.EMPTY);
     }
 

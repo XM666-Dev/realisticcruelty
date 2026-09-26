@@ -5,6 +5,7 @@ import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import com.xm666.realisticcruelty.math.Random;
 import com.xm666.realisticcruelty.math.VectorMath;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
@@ -27,7 +28,6 @@ public class BloodSplatParticle extends TextureSheetParticle {
     private final Direction rotation;
     private final int startDuration;
     private final int endDuration;
-    private final int roll = Random.nextInt(3);
 
     private BloodSplatParticle(ClientLevel level, double x, double y, double z, double xd, float r, float g, float b, SpriteSet sprites) {
         super(level, x, y, z);
@@ -36,6 +36,8 @@ public class BloodSplatParticle extends TextureSheetParticle {
         this.endDuration = 40;
         this.quadSize = 0.5F;
         this.rotation = Direction.values()[(int) xd];
+        this.roll = Random.nextInt(3) * Mth.HALF_PI;
+        this.oRoll = this.roll;
         this.rCol = r;
         this.gCol = g;
         this.bCol = b;
@@ -93,14 +95,32 @@ public class BloodSplatParticle extends TextureSheetParticle {
         super.renderRotatedQuad(buffer, quaternion, x, y, z, partialTicks);
     }
 
+    @Override
+    public void render(VertexConsumer buffer, Camera renderInfo, float partialTicks) {
+        var quaternionf = new Quaternionf();
+        this.getFacingCameraMode().setRotation(quaternionf, renderInfo, partialTicks);
+        if (this.roll != 0.0F) {
+            quaternionf.rotateZ(Mth.lerp(partialTicks, this.oRoll, this.roll));
+        }
+
+        this.renderRotatedQuad(buffer, renderInfo, quaternionf, partialTicks);
+    }
+
+    @Override
+    protected void renderRotatedQuad(VertexConsumer buffer, Camera camera, Quaternionf quaternion, float partialTicks) {
+        var vec3 = camera.getPosition();
+        var f = (float) (Mth.lerp(partialTicks, this.xo, this.x) - vec3.x());
+        var f1 = (float) (Mth.lerp(partialTicks, this.yo, this.y) - vec3.y());
+        var f2 = (float) (Mth.lerp(partialTicks, this.zo, this.z) - vec3.z());
+        this.renderRotatedQuad(buffer, quaternion, f, f1, f2, partialTicks);
+    }
+
     private Vec3 getDirectionVector() {
         return new Vec3(this.rotation.step());
     }
 
     private Quaternionf getDirectionQuaternion() {
-        var quaternion = new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, 1.0F), this.rotation.step());
-        quaternion.rotateZ(this.roll * Mth.HALF_PI);
-        return quaternion;
+        return new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, 1.0F), this.rotation.step());
     }
 
     public record Provider(SpriteSet sprites) implements ParticleProvider<ColorParticleOption> {

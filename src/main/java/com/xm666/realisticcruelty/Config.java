@@ -2,17 +2,30 @@ package com.xm666.realisticcruelty;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.EntityType;
+import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
+import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.client.gui.ConfigurationScreen;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
+@EventBusSubscriber(modid = RealisticCruelty.MODID)
 @Mod(RealisticCruelty.MODID)
 public class Config {
+    public static final HashSet<EntityType<?>> goreBlacklist = new HashSet<>();
+
+    public static final HashMap<EntityType<?>, Integer> goreColors = new HashMap<>();
+
+    public static final HashMap<EntityType<?>, Integer> goreTextureItems = new HashMap<>();
+
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     public static final ModConfigSpec.DoubleValue BLOOD_AMOUNT_FACTOR = BUILDER
@@ -98,19 +111,20 @@ public class Config {
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>> GORE_COLORS = BUILDER
             .defineList("gore_colors", List.of(
-                    "slime,0x5c993d",
+                    "slime,0x70cc52",
                     "magma_cube,0x99471f",
                     "enderman,0x4d1f4d",
                     "endermite,0x4d1f4d",
                     "warden,0x144b66",
-                    "glow_squid,0x33ffcc"
+                    "glow_squid,0x33ffcc",
+                    "wither_skeleton,0x262626"
             ), () -> "", Config::isValidEntityColor);
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>> GORE_TEXTURE_ITEMS = BUILDER
             .defineList("gore_texture_items", List.of(
                     "skeleton,bone",
                     "skeleton_horse,bone",
-                    "wither_skeleton,coal",
+                    "wither_skeleton,bone",
                     "stray,bone",
                     "bogged,bone",
                     "blaze,blaze_rod",
@@ -145,6 +159,37 @@ public class Config {
         container.registerExtensionPoint(IConfigScreenFactory.class, ConfigurationScreen::new);
     }
 
+    @SubscribeEvent
+    public static void onLoading(ModConfigEvent.Loading event) {
+        load();
+    }
+
+    @SubscribeEvent
+    public static void onLoading(ModConfigEvent.Reloading event) {
+        load();
+    }
+
+    private static void load() {
+        goreBlacklist.clear();
+        for (var string : GORE_BLACKLIST.get()) {
+            goreBlacklist.add(BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(string)));
+        }
+        goreColors.clear();
+        for (var string : GORE_COLORS.get()) {
+            var pair = Config.splitPair(string);
+            var entity = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(pair[0]));
+            var color = Integer.decode(pair[1]);
+            goreColors.put(entity, color);
+        }
+        goreTextureItems.clear();
+        for (var string : GORE_TEXTURE_ITEMS.get()) {
+            var pair = Config.splitPair(string);
+            var entity = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(pair[0]));
+            var item = BuiltInRegistries.ITEM.getId(ResourceLocation.parse(pair[1]));
+            goreTextureItems.put(entity, item);
+        }
+    }
+
     public static String[] splitPair(String string) {
         var index = string.indexOf(',');
         var first = string.substring(0, index);
@@ -154,9 +199,9 @@ public class Config {
 
     private static boolean isValidEntity(Object object) {
         try {
-            var path = (String) object;
-            var key = ResourceLocation.parse(path);
-            return BuiltInRegistries.ENTITY_TYPE.containsKey(key);
+            var string = (String) object;
+            var entity = ResourceLocation.parse(string);
+            return BuiltInRegistries.ENTITY_TYPE.containsKey(entity);
         } catch (Exception exception) {
             return false;
         }
@@ -164,9 +209,9 @@ public class Config {
 
     private static boolean isValidItem(Object object) {
         try {
-            var path = (String) object;
-            var key = ResourceLocation.parse(path);
-            return BuiltInRegistries.ITEM.containsKey(key);
+            var string = (String) object;
+            var entity = ResourceLocation.parse(string);
+            return BuiltInRegistries.ITEM.containsKey(entity);
         } catch (Exception exception) {
             return false;
         }
@@ -174,12 +219,12 @@ public class Config {
 
     private static boolean isValidEntityColor(Object object) {
         try {
-            var pair = (String) object;
-            var strings = splitPair(pair);
-            var entity = strings[0];
+            var string = (String) object;
+            var pair = splitPair(string);
+            var entity = pair[0];
             if (!isValidEntity(entity)) return false;
 
-            Integer.decode(strings[1]);
+            Integer.decode(pair[1]);
             return true;
         } catch (Exception exception) {
             return false;
@@ -188,13 +233,13 @@ public class Config {
 
     private static boolean isValidEntityItem(Object object) {
         try {
-            var pair = (String) object;
-            var strings = splitPair(pair);
-            var entity = strings[0];
+            var string = (String) object;
+            var pair = splitPair(string);
+            var entity = pair[0];
             if (!isValidEntity(entity)) return false;
 
-            var texture = strings[1];
-            return isValidItem(texture);
+            var item = pair[1];
+            return isValidItem(item);
         } catch (Exception exception) {
             return false;
         }

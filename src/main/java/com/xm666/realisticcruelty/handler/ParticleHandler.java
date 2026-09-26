@@ -29,7 +29,6 @@ public class ParticleHandler {
             addParticle(blood, position, velocity);
             --bloodAmount;
         }
-
         if (!hitInfo.isParticleFogEnabled() || item != Items.AIR) return;
 
         var hitPosition = hitInfo.getHitPosition();
@@ -39,9 +38,9 @@ public class ParticleHandler {
     }
 
     public static ParticleOptions getBlood(int color, Item item) {
-        if (item == Items.AIR) return ColorParticleOption.create(ParticleTypes.BLOOD.get(), color);
+        if (item != Items.AIR) return new ItemParticleOption(ParticleTypes.FRAGMENT.get(), new ItemStack(item, color));
 
-        return new ItemParticleOption(ParticleTypes.FRAGMENT.get(), new ItemStack(item));
+        return ColorParticleOption.create(ParticleTypes.BLOOD.get(), color);
     }
 
     public static float getBloodAmount(float amount) {

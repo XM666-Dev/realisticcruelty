@@ -5,10 +5,8 @@ import com.xm666.realisticcruelty.RealisticCruelty;
 import com.xm666.realisticcruelty.network.GorePayload;
 import com.xm666.realisticcruelty.network.HitType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -31,8 +29,8 @@ public class GoreHandler {
 
         var hitType = HitType.get(source);
         var amount = event.getNewDamage();
-        var color = getGoreColor(targetEntity);
         var item = getGoreItem(targetEntity);
+        var color = getGoreColor(targetEntity, item);
         gore(hitType, targetEntity, sourceEntity, amount, color, item);
     }
 
@@ -51,59 +49,29 @@ public class GoreHandler {
         ParticleHandler.gore(hitInfo, amount, color, item);
     }
 
-    public static void gore(HitType hitType, LivingEntity target, Entity source, float amount, int color, ResourceLocation item) {
+    public static void gore(HitType hitType, LivingEntity target, Entity source, float amount, int color, int item) {
         var hitTypeOrdinal = hitType.ordinal();
         var targetBoundingBox = target.getBoundingBox();
         var targetBoundingBoxMin = targetBoundingBox.getMinPosition().toVector3f();
         var targetBoundingBoxMax = targetBoundingBox.getMaxPosition().toVector3f();
         var sourcePosition = hitType.getSourcePosition(source).toVector3f();
         var sourceDirection = hitType.getSourceDirection(source).toVector3f();
-        var itemId = BuiltInRegistries.ITEM.getId(item);
-        var payload = new GorePayload(hitTypeOrdinal, targetBoundingBoxMin, targetBoundingBoxMax, sourcePosition, sourceDirection, amount, color, itemId);
+        var payload = new GorePayload(hitTypeOrdinal, targetBoundingBoxMin, targetBoundingBoxMax, sourcePosition, sourceDirection, amount, color, item);
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(target, payload);
     }
 
     public static boolean isGoreEnabled(LivingEntity living) {
         var type = living.getType();
-        var livingEntity = BuiltInRegistries.ENTITY_TYPE.getKey(type);
-        if (Config.GORE_USE_WHITELIST.get()) {
-            for (var path : Config.GORE_BLACKLIST.get()) {
-                var entity = ResourceLocation.parse(path);
-                if (livingEntity.equals(entity)) return true;
-            }
-            return false;
-        }
-
-        for (var path : Config.GORE_BLACKLIST.get()) {
-            var entity = ResourceLocation.parse(path);
-            if (livingEntity.equals(entity)) return false;
-        }
-        return true;
+        return Config.GORE_USE_WHITELIST.get() == Config.goreBlacklist.contains(type);
     }
 
-    public static int getGoreColor(LivingEntity living) {
+    public static int getGoreItem(LivingEntity living) {
         var type = living.getType();
-        var livingEntity = BuiltInRegistries.ENTITY_TYPE.getKey(type);
-        for (var pair : Config.GORE_COLORS.get()) {
-            var strings = Config.splitPair(pair);
-            var entity = ResourceLocation.parse(strings[0]);
-            var color = Integer.decode(strings[1]);
-            if (livingEntity.equals(entity)) return color;
-        }
-
-        return Config.GORE_COLOR_DEFAULT.get();
+        return Config.goreTextureItems.getOrDefault(type, 0);
     }
 
-    public static ResourceLocation getGoreItem(LivingEntity living) {
+    public static int getGoreColor(LivingEntity living, int item) {
         var type = living.getType();
-        var livingEntity = BuiltInRegistries.ENTITY_TYPE.getKey(type);
-        for (var pair : Config.GORE_TEXTURE_ITEMS.get()) {
-            var strings = Config.splitPair(pair);
-            var entity = ResourceLocation.parse(strings[0]);
-            var item = ResourceLocation.parse(strings[1]);
-            if (livingEntity.equals(entity)) return item;
-        }
-
-        return BuiltInRegistries.ITEM.getKey(Items.AIR);
+        return Config.goreColors.getOrDefault(type, item != 0 ? 0xffffff : Config.GORE_COLOR_DEFAULT.get());
     }
 }

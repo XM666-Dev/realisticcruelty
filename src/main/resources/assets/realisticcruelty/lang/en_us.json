@@ -36,6 +36,8 @@
   "realisticcruelty.configuration.blood_explosion_spread_degrees.tooltip": "Blood Explosion Spread Degrees",
   "realisticcruelty.configuration.blood_explosion_fog_enabled": "Blood Explosion Fog Enabled",
   "realisticcruelty.configuration.blood_explosion_fog_enabled.tooltip": "Blood Explosion Fog Enabled",
+  "realisticcruelty.configuration.blood_z_offset": "Blood Z Offset",
+  "realisticcruelty.configuration.blood_z_offset.tooltip": "Blood Z Offset",
   "realisticcruelty.configuration.blood_splat_enabled": "Blood Splat Enabled",
   "realisticcruelty.configuration.blood_splat_enabled.tooltip": "Blood Splat Enabled",
   "realisticcruelty.configuration.blood_splat_lifetime": "Blood Splat Lifetime",
