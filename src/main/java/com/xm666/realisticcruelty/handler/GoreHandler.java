@@ -2,24 +2,14 @@ package com.xm666.realisticcruelty.handler;
 
 import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.RealisticCruelty;
-import com.xm666.realisticcruelty.math.VectorMath;
 import com.xm666.realisticcruelty.network.GorePayload;
 import com.xm666.realisticcruelty.network.HitType;
 import com.xm666.realisticcruelty.network.PayloadHandler;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.item.Items;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.event.entity.living.LivingDamageEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.PacketDistributor;
-
-import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = RealisticCruelty.MODID)
 public class GoreHandler {
@@ -34,13 +24,13 @@ public class GoreHandler {
         if (sourceEntity == null) return;
 
         var hitType = HitType.get(source);
-        var amount = event.getAmount();
-        var color = getGoreColor(targetEntity);
+        var amount = event.getNewDamage();
         var item = getGoreItem(targetEntity);
+        var color = getGoreColor(targetEntity, item);
         gore(hitType, targetEntity, sourceEntity, amount, color, item);
     }
 
-    public static void handlePayload(final GorePayload payload, final Supplier<NetworkEvent.Context> context) {
+    public static void handlePayload(final GorePayload payload, final IPayloadContext context) {
         var hitType = HitType.values()[payload.hitType()];
         var targetBoundingBoxMin = new Vec3(payload.targetBoundingBoxMin());
         var targetBoundingBoxMax = new Vec3(payload.targetBoundingBoxMax());
@@ -55,59 +45,29 @@ public class GoreHandler {
         ParticleHandler.gore(hitInfo, amount, color, item);
     }
 
-    public static void gore(HitType hitType, LivingEntity target, Entity source, float amount, int color, ResourceLocation item) {
+    public static void gore(HitType hitType, LivingEntity target, Entity source, float amount, int color, int item) {
         var hitTypeOrdinal = hitType.ordinal();
         var targetBoundingBox = target.getBoundingBox();
-        var targetBoundingBoxMin = VectorMath.getMinPosition(targetBoundingBox).toVector3f();
-        var targetBoundingBoxMax = VectorMath.getMaxPosition(targetBoundingBox).toVector3f();
+        var targetBoundingBoxMin = targetBoundingBox.getMinPosition().toVector3f();
+        var targetBoundingBoxMax = targetBoundingBox.getMaxPosition().toVector3f();
         var sourcePosition = hitType.getSourcePosition(source).toVector3f();
         var sourceDirection = hitType.getSourceDirection(source).toVector3f();
-        var itemId = BuiltInRegistries.ITEM.getId(BuiltInRegistries.ITEM.get(item));
-        var payload = new GorePayload(hitTypeOrdinal, targetBoundingBoxMin, targetBoundingBoxMax, sourcePosition, sourceDirection, amount, color, itemId);
+        var payload = new GorePayload(hitTypeOrdinal, targetBoundingBoxMin, targetBoundingBoxMax, sourcePosition, sourceDirection, amount, color, item);
         PayloadHandler.INSTANCE.send(PacketDistributor.TRACKING_ENTITY_AND_SELF.with(() -> target), payload);
     }
 
     public static boolean isGoreEnabled(LivingEntity living) {
         var type = living.getType();
-        var livingEntity = BuiltInRegistries.ENTITY_TYPE.getKey(type);
-        if (Config.GORE_USE_WHITELIST.get()) {
-            for (var path : Config.GORE_BLACKLIST.get()) {
-                var entity = ResourceLocation.parse(path);
-                if (livingEntity.equals(entity)) return true;
-            }
-            return false;
-        }
-
-        for (var path : Config.GORE_BLACKLIST.get()) {
-            var entity = ResourceLocation.parse(path);
-            if (livingEntity.equals(entity)) return false;
-        }
-        return true;
+        return Config.GORE_USE_WHITELIST.get() == Config.goreBlacklist.contains(type);
     }
 
-    public static int getGoreColor(LivingEntity living) {
+    public static int getGoreItem(LivingEntity living) {
         var type = living.getType();
-        var livingEntity = BuiltInRegistries.ENTITY_TYPE.getKey(type);
-        for (var pair : Config.GORE_COLORS.get()) {
-            var strings = Config.splitPair(pair);
-            var entity = ResourceLocation.parse(strings[0]);
-            var color = Integer.decode(strings[1]);
-            if (livingEntity.equals(entity)) return color;
-        }
-
-        return Config.GORE_COLOR_DEFAULT.get();
+        return Config.goreTextureItems.getOrDefault(type, 0);
     }
 
-    public static ResourceLocation getGoreItem(LivingEntity living) {
+    public static int getGoreColor(LivingEntity living, int item) {
         var type = living.getType();
-        var livingEntity = BuiltInRegistries.ENTITY_TYPE.getKey(type);
-        for (var pair : Config.GORE_TEXTURE_ITEMS.get()) {
-            var strings = Config.splitPair(pair);
-            var entity = ResourceLocation.parse(strings[0]);
-            var item = ResourceLocation.parse(strings[1]);
-            if (livingEntity.equals(entity)) return item;
-        }
-
-        return BuiltInRegistries.ITEM.getKey(Items.AIR);
+        return Config.goreColors.getOrDefault(type, item != 0 ? 0xffffff : Config.GORE_COLOR_DEFAULT.get());
     }
 }

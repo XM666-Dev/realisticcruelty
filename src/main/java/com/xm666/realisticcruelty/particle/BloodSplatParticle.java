@@ -11,6 +11,7 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -25,7 +26,6 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
     private final Direction rotation;
     private final int startDuration;
     private final int endDuration;
-    private final int roll = Random.nextInt(3);
 
     private BloodSplatParticle(ClientLevel level, double x, double y, double z, double xd, float r, float g, float b, SpriteSet sprites) {
         super(level, x, y, z);
@@ -34,6 +34,8 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
         this.endDuration = 40;
         this.quadSize = 0.5F;
         this.rotation = Direction.values()[(int) xd];
+        this.roll = Random.nextInt(3) * Mth.HALF_PI;
+        this.oRoll = this.roll;
         this.rCol = r;
         this.gCol = g;
         this.bCol = b;
@@ -96,9 +98,7 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
     }
 
     private Quaternionf getDirectionQuaternion() {
-        var quaternion = new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, -1.0F), this.rotation.step());
-        quaternion.rotateZ(this.roll * Mth.HALF_PI);
-        return quaternion;
+        return new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, -1.0F), this.rotation.step());
     }
 
     public record Provider(SpriteSet sprites) implements ParticleProvider<ColorParticleOption> {
