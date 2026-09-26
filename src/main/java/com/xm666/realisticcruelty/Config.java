@@ -168,20 +168,20 @@ public class Config {
     private static void load() {
         goreBlacklist.clear();
         for (var string : GORE_BLACKLIST.get()) {
-            goreBlacklist.add(BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(string)));
+            goreBlacklist.add(BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(string)));
         }
         goreColors.clear();
         for (var string : GORE_COLORS.get()) {
             var pair = Config.splitPair(string);
-            var entity = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(pair[0]));
+            var entity = BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(pair[0]));
             var color = Integer.decode(pair[1]);
             goreColors.put(entity, color);
         }
         goreTextureItems.clear();
         for (var string : GORE_TEXTURE_ITEMS.get()) {
             var pair = Config.splitPair(string);
-            var entity = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(pair[0]));
-            var item = BuiltInRegistries.ITEM.getId(BuiltInRegistries.ITEM.get(ResourceLocation.parse(pair[1])));
+            var entity = BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(pair[0]));
+            var item = BuiltInRegistries.ITEM.getId(BuiltInRegistries.ITEM.get(new ResourceLocation(pair[1])));
             goreTextureItems.put(entity, item);
         }
     }
@@ -196,7 +196,7 @@ public class Config {
     private static boolean isValidEntity(Object object) {
         try {
             var string = (String) object;
-            var entity = ResourceLocation.parse(string);
+            var entity = new ResourceLocation(string);
             return BuiltInRegistries.ENTITY_TYPE.containsKey(entity);
         } catch (Exception exception) {
             return false;
@@ -206,7 +206,7 @@ public class Config {
     private static boolean isValidItem(Object object) {
         try {
             var string = (String) object;
-            var entity = ResourceLocation.parse(string);
+            var entity = new ResourceLocation(string);
             return BuiltInRegistries.ITEM.containsKey(entity);
         } catch (Exception exception) {
             return false;
