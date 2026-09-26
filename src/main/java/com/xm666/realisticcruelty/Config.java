@@ -4,14 +4,16 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.event.config.ModConfigEvent;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-@EventBusSubscriber(modid = RealisticCruelty.MODID)
 public class Config {
     public static final HashSet<EntityType<?>> goreBlacklist = new HashSet<>();
 
@@ -147,8 +149,10 @@ public class Config {
 
     private static final ForgeConfigSpec SPEC = BUILDER.build();
 
-    public static void init(FMLJavaModLoadingContext context) {
-        context.registerConfig(ModConfig.Type.COMMON, Config.SPEC);
+    public static void init(ModContainer container, IEventBus eventBus) {
+        container.addConfig(new ModConfig(ModConfig.Type.COMMON, Config.SPEC, container));
+        eventBus.addListener(Config::onLoading);
+        eventBus.addListener(Config::onReloading);
     }
 
     @SubscribeEvent
@@ -157,7 +161,7 @@ public class Config {
     }
 
     @SubscribeEvent
-    public static void onLoading(ModConfigEvent.Reloading event) {
+    public static void onReloading(ModConfigEvent.Reloading event) {
         load();
     }
 
@@ -177,7 +181,7 @@ public class Config {
         for (var string : GORE_TEXTURE_ITEMS.get()) {
             var pair = Config.splitPair(string);
             var entity = BuiltInRegistries.ENTITY_TYPE.get(ResourceLocation.parse(pair[0]));
-            var item = BuiltInRegistries.ITEM.getId(ResourceLocation.parse(pair[1]));
+            var item = BuiltInRegistries.ITEM.getId(BuiltInRegistries.ITEM.get(ResourceLocation.parse(pair[1])));
             goreTextureItems.put(entity, item);
         }
     }

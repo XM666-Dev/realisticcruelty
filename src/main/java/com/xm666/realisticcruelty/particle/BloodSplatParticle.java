@@ -11,7 +11,6 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;

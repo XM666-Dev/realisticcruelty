@@ -2,6 +2,7 @@ package com.xm666.realisticcruelty.handler;
 
 import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.RealisticCruelty;
+import com.xm666.realisticcruelty.math.VectorMath;
 import com.xm666.realisticcruelty.network.GorePayload;
 import com.xm666.realisticcruelty.network.HitType;
 import com.xm666.realisticcruelty.network.PayloadHandler;
@@ -10,6 +11,13 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
+
+import java.util.function.Supplier;
 
 @Mod.EventBusSubscriber(modid = RealisticCruelty.MODID)
 public class GoreHandler {
@@ -24,13 +32,13 @@ public class GoreHandler {
         if (sourceEntity == null) return;
 
         var hitType = HitType.get(source);
-        var amount = event.getNewDamage();
+        var amount = event.getAmount();
         var item = getGoreItem(targetEntity);
         var color = getGoreColor(targetEntity, item);
         gore(hitType, targetEntity, sourceEntity, amount, color, item);
     }
 
-    public static void handlePayload(final GorePayload payload, final IPayloadContext context) {
+    public static void handlePayload(final GorePayload payload, final Supplier<NetworkEvent.Context> context) {
         var hitType = HitType.values()[payload.hitType()];
         var targetBoundingBoxMin = new Vec3(payload.targetBoundingBoxMin());
         var targetBoundingBoxMax = new Vec3(payload.targetBoundingBoxMax());
@@ -48,8 +56,8 @@ public class GoreHandler {
     public static void gore(HitType hitType, LivingEntity target, Entity source, float amount, int color, int item) {
         var hitTypeOrdinal = hitType.ordinal();
         var targetBoundingBox = target.getBoundingBox();
-        var targetBoundingBoxMin = targetBoundingBox.getMinPosition().toVector3f();
-        var targetBoundingBoxMax = targetBoundingBox.getMaxPosition().toVector3f();
+        var targetBoundingBoxMin = VectorMath.getMinPosition(targetBoundingBox).toVector3f();
+        var targetBoundingBoxMax = VectorMath.getMaxPosition(targetBoundingBox).toVector3f();
         var sourcePosition = hitType.getSourcePosition(source).toVector3f();
         var sourceDirection = hitType.getSourceDirection(source).toVector3f();
         var payload = new GorePayload(hitTypeOrdinal, targetBoundingBoxMin, targetBoundingBoxMax, sourcePosition, sourceDirection, amount, color, item);
