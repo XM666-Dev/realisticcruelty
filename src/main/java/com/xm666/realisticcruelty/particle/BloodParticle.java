@@ -39,7 +39,7 @@ public class BloodParticle extends GoreParticle {
         if (bloodSound.isEmpty()) return;
 
         var bloodVolumeMultiplier = Config.BLOOD_VOLUME_MULTIPLIER.get().floatValue();
-        var sound = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse(bloodSound));
+        var sound = BuiltInRegistries.SOUND_EVENT.get(new ResourceLocation(bloodSound));
         var volume = Random.nextFloat(0.3F, 1.0F) * bloodVolumeMultiplier;
         this.level.playLocalSound(this.x, this.y, this.z, sound, SoundSource.BLOCKS, volume, 1.0F, false);
     }

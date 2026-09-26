@@ -43,7 +43,7 @@ public class BloodSplashParticle extends ExtendedTextureSheetParticle {
                 if (bloodSplashSound.isEmpty()) return;
 
                 var bloodSplashVolumeMultiplier = Config.BLOOD_SPLASH_VOLUME_MULTIPLIER.get().floatValue();
-                var sound = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse(bloodSplashSound));
+                var sound = BuiltInRegistries.SOUND_EVENT.get(new ResourceLocation(bloodSplashSound));
                 var volume = Random.nextFloat(0.3F, 1.0F) * bloodSplashVolumeMultiplier;
                 this.level.playLocalSound(this.x, this.y, this.z, sound, SoundSource.BLOCKS, volume, 1.0F, false);
             }
