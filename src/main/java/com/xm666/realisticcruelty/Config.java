@@ -75,7 +75,7 @@ public class Config {
             .define("blood_explosion_fog_enabled", true);
 
     public static final ForgeConfigSpec.DoubleValue BLOOD_Z_OFFSET = BUILDER
-            .defineInRange("blood_z_offset", 0.5, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+            .defineInRange("blood_z_offset", 0.25, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
     public static final ForgeConfigSpec.BooleanValue BLOOD_SPLAT_ENABLED = BUILDER
             .define("blood_splat_enabled", true);
