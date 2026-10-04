@@ -26,6 +26,49 @@ public abstract class HitInfo {
 
     public abstract boolean isParticleFogEnabled();
 
+    public static class General extends HitInfo {
+        private final Vec3 hitPosition;
+        private final Vec3 particleDirection;
+
+        public General(AABB targetBoundingBox, Vec3 sourcePosition, Vec3 sourceDirection) {
+            hitPosition = targetBoundingBox.getCenter();
+            particleDirection = sourceDirection.reverse();
+        }
+
+        @Override
+        public Vec3 getHitPosition() {
+            return addZOffset(hitPosition, particleDirection);
+        }
+
+        @Override
+        public Transform getParticleTransform() {
+            var spreadDegrees = getParticleSpreadDegrees();
+            var rotationAngle = Random.nextAngle(spreadDegrees);
+            var particleRotation = VectorMath.randomRotate(particleDirection, rotationAngle);
+            return new Transform(hitPosition, particleRotation);
+        }
+
+        @Override
+        public double getParticleSpeedMinMultiplier() {
+            return Config.BLOOD_GENERAL_SPEED_MIN_MULTIPLIER.get();
+        }
+
+        @Override
+        public double getParticleSpeedMaxMultiplier() {
+            return Config.BLOOD_GENERAL_SPEED_MAX_MULTIPLIER.get();
+        }
+
+        @Override
+        public float getParticleSpreadDegrees() {
+            return Config.BLOOD_GENERAL_SPREAD_DEGREES.get().floatValue();
+        }
+
+        @Override
+        public boolean isParticleFogEnabled() {
+            return Config.BLOOD_GENERAL_FOG_ENABLED.get();
+        }
+    }
+
     public abstract static class Ray extends HitInfo {
         private final Vec3 hitPosition;
         private final Vec3 particleDirection;
