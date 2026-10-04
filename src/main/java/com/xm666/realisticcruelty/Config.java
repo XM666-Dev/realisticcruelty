@@ -43,6 +43,18 @@ public class Config {
     public static final ModConfigSpec.DoubleValue BLOOD_SPEED_MAX = BUILDER
             .defineInRange("blood_speed_max", 1.5, 0.0, Double.POSITIVE_INFINITY);
 
+    public static final ModConfigSpec.DoubleValue BLOOD_GENERAL_SPEED_MIN_MULTIPLIER = BUILDER
+            .defineInRange("blood_general_speed_min_multiplier", 0.2, 0.0, Double.POSITIVE_INFINITY);
+
+    public static final ModConfigSpec.DoubleValue BLOOD_GENERAL_SPEED_MAX_MULTIPLIER = BUILDER
+            .defineInRange("blood_general_speed_max_multiplier", 0.5, 0.0, Double.POSITIVE_INFINITY);
+
+    public static final ModConfigSpec.DoubleValue BLOOD_GENERAL_SPREAD_DEGREES = BUILDER
+            .defineInRange("blood_general_spread_degrees", 90.0, 0.0, Double.POSITIVE_INFINITY);
+
+    public static final ModConfigSpec.BooleanValue BLOOD_GENERAL_FOG_ENABLED = BUILDER
+            .define("blood_general_fog_enabled", true);
+
     public static final ModConfigSpec.DoubleValue BLOOD_MELEE_SPEED_MIN_MULTIPLIER = BUILDER
             .defineInRange("blood_melee_speed_min_multiplier", 0.2, 0.0, Double.POSITIVE_INFINITY);
 
@@ -78,18 +90,6 @@ public class Config {
 
     public static final ModConfigSpec.BooleanValue BLOOD_EXPLOSION_FOG_ENABLED = BUILDER
             .define("blood_explosion_fog_enabled", true);
-
-    public static final ModConfigSpec.DoubleValue BLOOD_GENERAL_SPEED_MIN_MULTIPLIER = BUILDER
-            .defineInRange("blood_general_speed_min_multiplier", 0.2, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ModConfigSpec.DoubleValue BLOOD_GENERAL_SPEED_MAX_MULTIPLIER = BUILDER
-            .defineInRange("blood_general_speed_max_multiplier", 0.5, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ModConfigSpec.DoubleValue BLOOD_GENERAL_SPREAD_DEGREES = BUILDER
-            .defineInRange("blood_general_spread_degrees", 90.0, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ModConfigSpec.BooleanValue BLOOD_GENERAL_FOG_ENABLED = BUILDER
-            .define("blood_general_fog_enabled", true);
 
     public static final ModConfigSpec.DoubleValue BLOOD_Z_OFFSET = BUILDER
             .defineInRange("blood_z_offset", 0.25, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
