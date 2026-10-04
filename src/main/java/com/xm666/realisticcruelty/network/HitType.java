@@ -1,12 +1,32 @@
 package com.xm666.realisticcruelty.network;
 
-import net.minecraft.tags.DamageTypeTags;
+import com.xm666.realisticcruelty.RealisticCruelty;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public enum HitType {
+    GENERAL {
+        @Override
+        public Vec3 getSourcePosition(Entity entity) {
+            return Vec3.ZERO;
+        }
+
+        @Override
+        public Vec3 getSourceDirection(Entity entity) {
+            return new Vec3(0.0, 1.0, 0.0);
+        }
+
+        @Override
+        public HitInfo getHitInfo(AABB targetBoundingBox, Vec3 sourcePosition, Vec3 sourceDirection) {
+            return new HitInfo.General(targetBoundingBox, sourcePosition, sourceDirection);
+        }
+    },
     MELEE {
         @Override
         public Vec3 getSourcePosition(Entity entity) {
@@ -53,14 +73,33 @@ public enum HitType {
             return new HitInfo.Explosion(targetBoundingBox, sourcePosition, sourceDirection);
         }
     };
+    private static final TagKey<DamageType> GORE_GENERAL = TagKey.create(
+            Registries.DAMAGE_TYPE,
+            new ResourceLocation(RealisticCruelty.MODID, "gore_general")
+    );
+    private static final TagKey<DamageType> GORE_PROJECTILE = TagKey.create(
+            Registries.DAMAGE_TYPE,
+            new ResourceLocation(RealisticCruelty.MODID, "gore_projectile")
+    );
+    private static final TagKey<DamageType> GORE_EXPLOSION = TagKey.create(
+            Registries.DAMAGE_TYPE,
+            new ResourceLocation(RealisticCruelty.MODID, "gore_explosion")
+    );
 
-    public static HitType get(DamageSource damageSource) {
-        if (damageSource.is(DamageTypeTags.IS_EXPLOSION)) {
-            return HitType.EXPLOSION;
-        } else if (!damageSource.isIndirect()) {
-            return HitType.MELEE;
+    public static HitType get(DamageSource source) {
+        if (source.getDirectEntity() == null) {
+            if (source.is(GORE_GENERAL)) {
+                return GENERAL;
+            }
+            return null;
         }
-        return HitType.PROJECTILE;
+
+        if (source.is(GORE_PROJECTILE)) {
+            return PROJECTILE;
+        } else if (source.is(GORE_EXPLOSION)) {
+            return EXPLOSION;
+        }
+        return MELEE;
     }
 
     public abstract Vec3 getSourcePosition(Entity entity);

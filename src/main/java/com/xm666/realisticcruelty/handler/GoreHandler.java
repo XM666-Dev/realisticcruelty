@@ -28,11 +28,11 @@ public class GoreHandler {
         if (level.isClientSide || !isGoreEnabled(targetEntity)) return;
 
         var source = event.getSource();
-        var sourceEntity = source.getDirectEntity();
-        if (sourceEntity == null) return;
-
         var hitType = HitType.get(source);
-        var amount = event.getAmount();
+        if (hitType == null) return;
+
+        var sourceEntity = source.getDirectEntity();
+        var amount = Math.min(event.getAmount(), targetEntity.getMaxHealth());
         var item = getGoreItem(targetEntity);
         var color = getGoreColor(targetEntity, item);
         gore(hitType, targetEntity, sourceEntity, amount, color, item);
