@@ -28,7 +28,7 @@ public class GoreHandler {
         if (hitType == null) return;
 
         var sourceEntity = source.getDirectEntity();
-        var amount = event.getNewDamage();
+        var amount = Math.min(event.getNewDamage(), targetEntity.getMaxHealth());
         var item = getGoreItem(targetEntity);
         var color = getGoreColor(targetEntity, item);
         gore(hitType, targetEntity, sourceEntity, amount, color, item);
