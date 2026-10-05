@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.xm666.realisticcruelty.mixin",
+  "plugin": "com.xm666.realisticcruelty.MixinConfigPlugin",
+  "compatibilityLevel": "JAVA_21",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "overwrites": {
+    "requireAnnotations": true
+  },
+  "client": [
+    "ClientGoreMixin$ClientPacketListenerMixin"
+  ]
+}

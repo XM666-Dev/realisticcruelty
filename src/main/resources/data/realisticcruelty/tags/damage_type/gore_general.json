@@ -1,5 +1,6 @@
 {
   "values": [
-    "#neoforge:is_physical"
+    "#neoforge:is_physical",
+    "#minecraft:is_explosion"
   ]
 }

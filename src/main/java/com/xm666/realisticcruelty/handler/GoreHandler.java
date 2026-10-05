@@ -1,11 +1,12 @@
 package com.xm666.realisticcruelty.handler;
 
 import com.xm666.realisticcruelty.Config;
+import com.xm666.realisticcruelty.MixinConfig;
 import com.xm666.realisticcruelty.RealisticCruelty;
 import com.xm666.realisticcruelty.network.GorePayload;
 import com.xm666.realisticcruelty.network.HitType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -19,19 +20,12 @@ import net.neoforged.neoforge.network.handling.IPayloadContext;
 public class GoreHandler {
     @SubscribeEvent
     public static void onLivingDamage(LivingDamageEvent.Post event) {
-        var targetEntity = event.getEntity();
-        var level = targetEntity.level();
-        if (level.isClientSide || !isGoreEnabled(targetEntity)) return;
+        if (MixinConfig.CLIENT_GORE_ENABLED.get()) return;
 
+        var target = event.getEntity();
         var source = event.getSource();
-        var hitType = HitType.get(source);
-        if (hitType == null) return;
-
-        var sourceEntity = source.getDirectEntity();
-        var amount = Math.min(event.getNewDamage(), targetEntity.getMaxHealth());
-        var item = getGoreItem(targetEntity);
-        var color = getGoreColor(targetEntity, item);
-        gore(hitType, targetEntity, sourceEntity, amount, color, item);
+        var damage = event.getNewDamage();
+        onDamage(target, source, damage);
     }
 
     public static void handlePayload(final GorePayload payload, final IPayloadContext context) {
@@ -44,12 +38,29 @@ public class GoreHandler {
         var hitInfo = hitType.getHitInfo(targetBoundingBox, sourcePosition, sourceDirection);
         var amount = payload.amount();
         var color = payload.color();
-        var itemId = payload.item();
-        var item = BuiltInRegistries.ITEM.byId(itemId);
-        ParticleHandler.gore(hitInfo, amount, color, item);
+        var item = payload.item();
+        var itemType = BuiltInRegistries.ITEM.byId(item);
+        ParticleHandler.gore(hitInfo, amount, color, itemType);
     }
 
-    public static void gore(HitType hitType, LivingEntity target, Entity source, float amount, int color, int item) {
+    public static void onDamage(LivingEntity target, DamageSource source, float damage) {
+        if (!isGoreEnabled(target)) return;
+
+        var hitType = HitType.get(source);
+        if (hitType == null) return;
+
+        var amount = Math.min(damage, target.getMaxHealth());
+        var item = getGoreItem(target);
+        var color = getGoreColor(target, item);
+        if (target.level().isClientSide()) {
+            goreClient(hitType, target, source, amount, color, item);
+            return;
+        }
+
+        gore(hitType, target, source, amount, color, item);
+    }
+
+    public static void gore(HitType hitType, LivingEntity target, DamageSource source, float amount, int color, int item) {
         var hitTypeOrdinal = hitType.ordinal();
         var targetBoundingBox = target.getBoundingBox();
         var targetBoundingBoxMin = targetBoundingBox.getMinPosition().toVector3f();
@@ -58,6 +69,15 @@ public class GoreHandler {
         var sourceDirection = hitType.getSourceDirection(source).toVector3f();
         var payload = new GorePayload(hitTypeOrdinal, targetBoundingBoxMin, targetBoundingBoxMax, sourcePosition, sourceDirection, amount, color, item);
         PacketDistributor.sendToPlayersTrackingEntityAndSelf(target, payload);
+    }
+
+    public static void goreClient(HitType hitType, LivingEntity target, DamageSource source, float amount, int color, int item) {
+        var targetBoundingBox = target.getBoundingBox();
+        var sourcePosition = hitType.getSourcePosition(source);
+        var sourceDirection = hitType.getSourceDirection(source);
+        var hitInfo = hitType.getHitInfo(targetBoundingBox, sourcePosition, sourceDirection);
+        var itemType = BuiltInRegistries.ITEM.byId(item);
+        ParticleHandler.gore(hitInfo, amount, color, itemType);
     }
 
     public static boolean isGoreEnabled(LivingEntity living) {

@@ -14,6 +14,7 @@ import net.minecraft.sounds.SoundSource;
 public class BloodParticle extends GoreParticle {
     private BloodParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, float r, float g, float b, SpriteSet sprites) {
         super(level, x, y, z, xd, yd, zd, 5, 10);
+        this.lifetime = 60;
         this.rCol = r;
         this.gCol = g;
         this.bCol = b;

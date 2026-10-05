@@ -173,6 +173,8 @@ public class Config {
 
     @SubscribeEvent
     public static void onLoading(ModConfigEvent.Loading event) {
+        if (event.getConfig().getType() != ModConfig.Type.COMMON) return;
+
         load();
     }
 
