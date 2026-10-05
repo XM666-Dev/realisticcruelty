@@ -1,5 +1,6 @@
 {
   "values": [
-    "#realisticcruelty:is_physical"
+    "#realisticcruelty:is_physical",
+    "#minecraft:is_explosion"
   ]
 }

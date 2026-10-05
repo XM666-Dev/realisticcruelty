@@ -25,8 +25,9 @@ public class FragmentParticle extends GoreParticle {
     private final float rotAngleTo;
 
     private FragmentParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, ItemStack stack) {
-        super(level, x, y, z, xd, yd, zd, 5, 20);
+        super(level, x, y, z, xd, yd, zd, 5, 60);
         var color = stack.getCount();
+        this.lifetime = 80;
         this.quadSize = 0.2F;
         this.rotAngleFrom = Random.nextFloat(Mth.TWO_PI);
         this.rotAngleTo = getRotAngleTo();

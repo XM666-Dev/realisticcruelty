@@ -6,19 +6,25 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+
+import java.util.Arrays;
 
 public enum HitType {
     GENERAL {
         @Override
-        public Vec3 getSourcePosition(Entity entity) {
+        public boolean isSourceMatched(DamageSource source) {
+            return source.is(GORE_GENERAL);
+        }
+
+        @Override
+        public Vec3 getSourcePosition(DamageSource source) {
             return Vec3.ZERO;
         }
 
         @Override
-        public Vec3 getSourceDirection(Entity entity) {
+        public Vec3 getSourceDirection(DamageSource source) {
             return new Vec3(0.0, 1.0, 0.0);
         }
 
@@ -29,13 +35,18 @@ public enum HitType {
     },
     MELEE {
         @Override
-        public Vec3 getSourcePosition(Entity entity) {
-            return entity.getEyePosition();
+        public boolean isSourceMatched(DamageSource source) {
+            return !source.isIndirect() && source.getDirectEntity() != null;
         }
 
         @Override
-        public Vec3 getSourceDirection(Entity entity) {
-            return entity.getLookAngle();
+        public Vec3 getSourcePosition(DamageSource source) {
+            return source.getDirectEntity().getEyePosition();
+        }
+
+        @Override
+        public Vec3 getSourceDirection(DamageSource source) {
+            return source.getDirectEntity().getLookAngle();
         }
 
         @Override
@@ -45,13 +56,18 @@ public enum HitType {
     },
     PROJECTILE {
         @Override
-        public Vec3 getSourcePosition(Entity entity) {
-            return entity.position();
+        public boolean isSourceMatched(DamageSource source) {
+            return source.isIndirect() && source.getDirectEntity() != null;
         }
 
         @Override
-        public Vec3 getSourceDirection(Entity entity) {
-            return entity.getDeltaMovement().normalize();
+        public Vec3 getSourcePosition(DamageSource source) {
+            return source.getSourcePosition();
+        }
+
+        @Override
+        public Vec3 getSourceDirection(DamageSource source) {
+            return source.getDirectEntity().getDeltaMovement().normalize();
         }
 
         @Override
@@ -60,11 +76,16 @@ public enum HitType {
         }
     },
     EXPLOSION {
-        public Vec3 getSourcePosition(Entity entity) {
-            return entity.position();
+        @Override
+        public boolean isSourceMatched(DamageSource source) {
+            return source.is(GORE_EXPLOSION) && source.getSourcePosition() != null;
         }
 
-        public Vec3 getSourceDirection(Entity entity) {
+        public Vec3 getSourcePosition(DamageSource source) {
+            return source.getSourcePosition();
+        }
+
+        public Vec3 getSourceDirection(DamageSource source) {
             return Vec3.ZERO;
         }
 
@@ -73,13 +94,10 @@ public enum HitType {
             return new HitInfo.Explosion(targetBoundingBox, sourcePosition, sourceDirection);
         }
     };
+    private static final HitType[] HIT_TYPES = new HitType[]{EXPLOSION, MELEE, PROJECTILE, GENERAL};
     private static final TagKey<DamageType> GORE_GENERAL = TagKey.create(
             Registries.DAMAGE_TYPE,
             new ResourceLocation(RealisticCruelty.MODID, "gore_general")
-    );
-    private static final TagKey<DamageType> GORE_PROJECTILE = TagKey.create(
-            Registries.DAMAGE_TYPE,
-            new ResourceLocation(RealisticCruelty.MODID, "gore_projectile")
     );
     private static final TagKey<DamageType> GORE_EXPLOSION = TagKey.create(
             Registries.DAMAGE_TYPE,
@@ -87,24 +105,14 @@ public enum HitType {
     );
 
     public static HitType get(DamageSource source) {
-        if (source.getDirectEntity() == null) {
-            if (source.is(GORE_GENERAL)) {
-                return GENERAL;
-            }
-            return null;
-        }
-
-        if (source.is(GORE_PROJECTILE)) {
-            return PROJECTILE;
-        } else if (source.is(GORE_EXPLOSION)) {
-            return EXPLOSION;
-        }
-        return MELEE;
+        return Arrays.stream(HIT_TYPES).filter(type -> type.isSourceMatched(source)).findFirst().orElse(null);
     }
 
-    public abstract Vec3 getSourcePosition(Entity entity);
+    public abstract boolean isSourceMatched(DamageSource source);
 
-    public abstract Vec3 getSourceDirection(Entity entity);
+    public abstract Vec3 getSourcePosition(DamageSource source);
+
+    public abstract Vec3 getSourceDirection(DamageSource source);
 
     public abstract HitInfo getHitInfo(AABB targetBoundingBox, Vec3 sourcePosition, Vec3 sourceDirection);
 }

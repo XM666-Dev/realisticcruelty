@@ -20,7 +20,6 @@ public class GoreParticle extends ExtendedTextureSheetParticle {
 
     protected GoreParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, int startDuration, int endDuration) {
         super(level, x, y, z);
-        this.lifetime = 60;
         this.startDuration = startDuration;
         this.endDuration = endDuration;
         this.gravity = 1.5F;
