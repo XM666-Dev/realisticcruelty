@@ -20,6 +20,7 @@ public class RealisticCruelty {
 
     public RealisticCruelty(ModContainer container, IEventBus eventBus) {
         Config.init(container, eventBus);
+        ClientConfig.init(container);
         ParticleTypes.init(eventBus);
         PayloadHandler.init();
     }

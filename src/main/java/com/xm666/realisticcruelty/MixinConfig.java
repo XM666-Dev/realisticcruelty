@@ -1,12 +1,12 @@
 package com.xm666.realisticcruelty;
 
-import net.neoforged.neoforge.common.ModConfigSpec;
+import net.minecraftforge.common.ForgeConfigSpec;
 
 public class MixinConfig {
-    private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
+    private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
-    public static final ModConfigSpec.BooleanValue CLIENT_GORE_ENABLED = BUILDER
+    public static final ForgeConfigSpec.BooleanValue CLIENT_GORE_ENABLED = BUILDER
             .define("clientGoreEnabled", false);
 
-    public static final ModConfigSpec SPEC = BUILDER.build();
+    public static final ForgeConfigSpec SPEC = BUILDER.build();
 }

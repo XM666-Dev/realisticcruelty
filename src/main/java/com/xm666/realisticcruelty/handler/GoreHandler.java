@@ -2,21 +2,22 @@ package com.xm666.realisticcruelty.handler;
 
 import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.MixinConfig;
-import com.xm666.realisticcruelty.RealisticCruelty;
+import com.xm666.realisticcruelty.math.VectorMath;
 import com.xm666.realisticcruelty.network.GorePayload;
 import com.xm666.realisticcruelty.network.HitType;
+import com.xm666.realisticcruelty.network.PayloadHandler;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.event.entity.living.LivingDamageEvent;
+import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.network.NetworkEvent;
+import net.minecraftforge.network.PacketDistributor;
 
-@Mod.EventBusSubscriber(modid = RealisticCruelty.MODID)
+import java.util.function.Supplier;
+
 public class GoreHandler {
     @SubscribeEvent
     public static void onLivingDamage(LivingDamageEvent event) {

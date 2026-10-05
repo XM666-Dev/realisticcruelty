@@ -7,12 +7,18 @@ import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.config.ConfigTracker;
+import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
+import net.minecraftforge.fml.loading.FMLPaths;
 
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 public class Config {
     public static final HashSet<EntityType<?>> goreBlacklist = new HashSet<>();
@@ -162,7 +168,7 @@ public class Config {
     private static final ForgeConfigSpec SPEC = BUILDER.build();
 
     public static void init(ModContainer container, IEventBus eventBus) {
-        container.addConfig(new ModConfig(ModConfig.Type.COMMON, Config.SPEC, container));
+        container.addConfig(new ModConfig(ModConfig.Type.COMMON, SPEC, container));
         eventBus.addListener(Config::onLoading);
         eventBus.addListener(Config::onReloading);
     }
@@ -197,6 +203,22 @@ public class Config {
             var entity = BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(pair[0]));
             var item = BuiltInRegistries.ITEM.getId(BuiltInRegistries.ITEM.get(new ResourceLocation(pair[1])));
             goreTextureItems.put(entity, item);
+        }
+    }
+
+    public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec, ModContainer container) {
+        registerConfig(type, spec, container, type.extension());
+    }
+
+    public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec, ModContainer container, String extension) {
+        var fileName = String.format(Locale.ROOT, "%s-%s.toml", RealisticCruelty.MODID, extension);
+        var config = new ModConfig(type, spec, container, fileName);
+        try {
+            var method = ConfigTracker.class.getDeclaredMethod("openConfig", ModConfig.class, Path.class);
+            method.setAccessible(true);
+            method.invoke(ConfigTracker.INSTANCE, config, FMLPaths.CONFIGDIR.get());
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 
