@@ -2,6 +2,7 @@ package com.xm666.realisticcruelty.handler;
 
 import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.MixinConfig;
+import com.xm666.realisticcruelty.RealisticCruelty;
 import com.xm666.realisticcruelty.math.VectorMath;
 import com.xm666.realisticcruelty.network.GorePayload;
 import com.xm666.realisticcruelty.network.HitType;
@@ -13,11 +14,13 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.entity.living.LivingDamageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.PacketDistributor;
 
 import java.util.function.Supplier;
 
+@Mod.EventBusSubscriber(modid = RealisticCruelty.MODID)
 public class GoreHandler {
     @SubscribeEvent
     public static void onLivingDamage(LivingDamageEvent event) {
