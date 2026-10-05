@@ -1,6 +1,7 @@
 package com.xm666.realisticcruelty.particle;
 
 import com.xm666.realisticcruelty.math.InverseFunction;
+import com.xm666.realisticcruelty.math.Random;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
@@ -19,7 +20,17 @@ public class BloodFogParticle extends TextureSheetParticle {
         this.rCol = r;
         this.gCol = g;
         this.bCol = b;
-        this.pickSprite(sprites);
+        this.setSprite(sprites.get(getSpriteIndex(), 11));
+    }
+
+    private int getSpriteIndex() {
+        if (this.quadSize < 0.6F) {
+            return Random.nextInt(8, 11);
+        } else if (this.quadSize < 0.9F) {
+            return Random.nextInt(4, 7);
+        } else {
+            return Random.nextInt(0, 3);
+        }
     }
 
     @Override
