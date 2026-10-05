@@ -2,6 +2,10 @@
   "realisticcruelty.configuration.title": "RealisticCruelty Configuration",
   "realisticcruelty.configuration.section.realisticcruelty.common.toml": "Common Settings",
   "realisticcruelty.configuration.section.realisticcruelty.common.toml.title": "RealisticCruelty Common Configuration",
+  "realisticcruelty.configuration.section.realisticcruelty.client.toml": "Client Settings",
+  "realisticcruelty.configuration.section.realisticcruelty.client.toml.title": "RealisticCruelty Client Configuration",
+  "realisticcruelty.configuration.section.realisticcruelty.startup.toml": "Injection Settings",
+  "realisticcruelty.configuration.section.realisticcruelty.startup.toml.title": "RealisticCruelty Injection Configuration",
   "realisticcruelty.configuration.blood_amount_factor": "Blood Amount Factor",
   "realisticcruelty.configuration.blood_amount_factor.tooltip": "Blood Amount Factor",
   "realisticcruelty.configuration.blood_amount_max": "Blood Amount Max",
@@ -79,5 +83,11 @@
   "realisticcruelty.configuration.fragment_sound": "Fragment Sound",
   "realisticcruelty.configuration.fragment_sound.tooltip": "Fragment Sound",
   "realisticcruelty.configuration.fragment_volume_multiplier": "Fragment Volume Multiplier",
-  "realisticcruelty.configuration.fragment_volume_multiplier.tooltip": "Fragment Volume Multiplier"
+  "realisticcruelty.configuration.fragment_volume_multiplier.tooltip": "Fragment Volume Multiplier",
+  "realisticcruelty.configuration.client_blood_amount_min": "Client Blood Amount Min",
+  "realisticcruelty.configuration.client_blood_amount_min.tooltip": "Client Blood Amount Min",
+  "realisticcruelty.configuration.client_blood_amount_max": "Client Blood Amount Max",
+  "realisticcruelty.configuration.client_blood_amount_max.tooltip": "Client Blood Amount Max",
+  "realisticcruelty.configuration.clientGoreEnabled": "Client Gore Enabled",
+  "realisticcruelty.configuration.clientGoreEnabled.tooltip": "Client Gore Enabled"
 }
