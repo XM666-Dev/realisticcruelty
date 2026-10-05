@@ -50,7 +50,7 @@ public class GoreHandler {
         var hitType = HitType.get(source);
         if (hitType == null) return;
 
-        var amount = Math.min(damage, target.getMaxHealth());
+        var amount = Math.min(damage, target.getMaxHealth() * 2.0F + 0.5F);
         var item = getGoreItem(target);
         var color = getGoreColor(target, item);
         if (target.level().isClientSide()) {
