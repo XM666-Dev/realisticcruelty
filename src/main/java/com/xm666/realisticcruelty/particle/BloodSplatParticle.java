@@ -46,6 +46,14 @@ public class BloodSplatParticle extends TextureSheetParticle {
 
     @Override
     public void move(double x, double y, double z) {
+        if (this.age == 1) {
+            var velocity = this.getDirectionVector().reverse();
+            var collisionResult = CollisionHandler.collideBoundingBox(null, velocity, this.getBoundingBox(), this.level, List.of());
+            var remainder = collisionResult.remainder();
+            this.setPos(this.x + remainder.x, this.y + remainder.y, this.z + remainder.z);
+            return;
+        }
+
         if (this.age % 10 != 0) return;
 
         var velocity = this.getDirectionVector().scale(-0.01);
