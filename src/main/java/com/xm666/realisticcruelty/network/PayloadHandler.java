@@ -1,5 +1,6 @@
 package com.xm666.realisticcruelty.network;
 
+import com.xm666.realisticcruelty.MixinConfig;
 import com.xm666.realisticcruelty.RealisticCruelty;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.fml.common.Mod;
@@ -20,6 +21,8 @@ public class PayloadHandler {
     );
 
     public static void init() {
+        if (MixinConfig.CLIENT_GORE_ENABLED.get()) return;
+
         var index = 0;
         INSTANCE.registerMessage(index++, GorePayload.class, GorePayload::write, GorePayload::read, GorePayload::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }

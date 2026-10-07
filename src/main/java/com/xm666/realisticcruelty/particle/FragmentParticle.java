@@ -3,6 +3,7 @@ package com.xm666.realisticcruelty.particle;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.math.Random;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
@@ -108,6 +109,26 @@ public class FragmentParticle extends GoreParticle {
     protected void renderRotatedQuad(VertexConsumer buffer, Quaternionf quaternion, float x, float y, float z, float partialTicks) {
         y += 0.1F;
         super.renderRotatedQuad(buffer, quaternion, x, y, z, partialTicks);
+    }
+
+    @Override
+    public void render(VertexConsumer buffer, Camera renderInfo, float partialTicks) {
+        var quaternionf = new Quaternionf();
+        this.getFacingCameraMode().setRotation(quaternionf, renderInfo, partialTicks);
+        if (this.roll != 0.0F) {
+            quaternionf.rotateZ(Mth.lerp(partialTicks, this.oRoll, this.roll));
+        }
+
+        this.renderRotatedQuad(buffer, renderInfo, quaternionf, partialTicks);
+    }
+
+    @Override
+    protected void renderRotatedQuad(VertexConsumer buffer, Camera camera, Quaternionf quaternion, float partialTicks) {
+        var vec3 = camera.getPosition();
+        var f = (float) (Mth.lerp(partialTicks, this.xo, this.x) - vec3.x());
+        var f1 = (float) (Mth.lerp(partialTicks, this.yo, this.y) - vec3.y());
+        var f2 = (float) (Mth.lerp(partialTicks, this.zo, this.z) - vec3.z());
+        this.renderRotatedQuad(buffer, quaternion, f, f1, f2, partialTicks);
     }
 
     public record Provider(SpriteSet sprites) implements ParticleProvider<ItemParticleOption> {

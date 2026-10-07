@@ -102,10 +102,10 @@ public class Config {
             .defineInRange("blood_splat_lifetime", 100, 0, Integer.MAX_VALUE);
 
     public static final ForgeConfigSpec.DoubleValue BLOOD_FOG_SIZE_FACTOR = BUILDER
-            .defineInRange("blood_fog_size_factor", 0.3, 0.0, Double.POSITIVE_INFINITY);
+            .defineInRange("blood_fog_size_factor", 0.2, 0.0, Double.POSITIVE_INFINITY);
 
     public static final ForgeConfigSpec.DoubleValue BLOOD_FOG_SIZE_MAX = BUILDER
-            .defineInRange("blood_fog_size_max", 1.5, 0.0, Double.POSITIVE_INFINITY);
+            .defineInRange("blood_fog_size_max", 1.0, 0.0, Double.POSITIVE_INFINITY);
 
     public static final ForgeConfigSpec.IntValue BLOOD_SPLASH_COUNT_MIN = BUILDER
             .defineInRange("blood_splash_count_min", 2, 0, Integer.MAX_VALUE);
@@ -152,12 +152,6 @@ public class Config {
 
     public static final ForgeConfigSpec.DoubleValue BLOOD_VOLUME_MULTIPLIER = BUILDER
             .defineInRange("blood_volume_multiplier", 1.0, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.ConfigValue<String> BLOOD_SPLASH_SOUND = BUILDER
-            .define("blood_splash_sound", "block.beehive.drip");
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_SPLASH_VOLUME_MULTIPLIER = BUILDER
-            .defineInRange("blood_splash_volume_multiplier", 0.5, 0.0, Double.POSITIVE_INFINITY);
 
     public static final ForgeConfigSpec.ConfigValue<String> FRAGMENT_SOUND = BUILDER
             .define("fragment_sound", "block.dripstone_block.fall");
