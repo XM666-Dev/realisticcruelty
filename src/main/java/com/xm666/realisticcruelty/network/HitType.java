@@ -1,10 +1,7 @@
 package com.xm666.realisticcruelty.network;
 
 import com.xm666.realisticcruelty.Config;
-import com.xm666.realisticcruelty.RealisticCruelty;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.TagKey;
+import com.xm666.realisticcruelty.handler.TagObject;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.phys.AABB;

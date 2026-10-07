@@ -1,5 +1,6 @@
 package com.xm666.realisticcruelty;
 
+import com.xm666.realisticcruelty.handler.TagObject;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -14,7 +15,6 @@ import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
@@ -156,7 +156,26 @@ public class Config {
 
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> GORE_GENERAL_DAMAGE_TYPES = BUILDER
             .defineList("gore_general_damage_types", List.of(
-                    "#neoforge:is_physical",
+                    "minecraft:cactus",
+                    "minecraft:stalagmite",
+                    "minecraft:falling_stalactite",
+                    "minecraft:falling_block",
+                    "minecraft:falling_anvil",
+                    "minecraft:cramming",
+                    "minecraft:fly_into_wall",
+                    "minecraft:sweet_berry_bush",
+                    "minecraft:fall",
+                    "minecraft:sting",
+                    "minecraft:mob_attack",
+                    "minecraft:player_attack",
+                    "minecraft:mob_attack_no_aggro",
+                    "minecraft:arrow",
+                    "minecraft:thrown",
+                    "minecraft:trident",
+                    "minecraft:mob_projectile",
+                    "minecraft:sonic_boom",
+                    "minecraft:in_wall",
+                    "minecraft:generic",
                     "#minecraft:is_explosion"
             ), Config::isValidDamageTypeOrTag);
 
