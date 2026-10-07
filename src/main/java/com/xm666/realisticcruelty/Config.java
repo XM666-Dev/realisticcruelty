@@ -1,7 +1,9 @@
 package com.xm666.realisticcruelty;
 
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.entity.EntityType;
 import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -12,6 +14,7 @@ import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.config.ModConfigEvent;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.neoforged.neoforge.common.ModConfigSpec;
 
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
@@ -26,6 +29,10 @@ public class Config {
     public static final HashMap<EntityType<?>, Integer> goreColors = new HashMap<>();
 
     public static final HashMap<EntityType<?>, Integer> goreTextureItems = new HashMap<>();
+
+    public static final TagObject<DamageType> goreGeneralTagObject = new TagObject<>();
+
+    public static final TagObject<DamageType> goreExplosionTagObject = new TagObject<>();
 
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
@@ -147,6 +154,17 @@ public class Config {
                     "snow_golem,snowball"
             ), Config::isValidEntityItem);
 
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> GORE_GENERAL_DAMAGE_TYPES = BUILDER
+            .defineList("gore_general_damage_types", List.of(
+                    "#neoforge:is_physical",
+                    "#minecraft:is_explosion"
+            ), Config::isValidDamageTypeOrTag);
+
+    public static final ForgeConfigSpec.ConfigValue<List<? extends String>> GORE_EXPLOSION_DAMAGE_TYPES = BUILDER
+            .defineList("gore_explosion_damage_types", List.of(
+                    "#minecraft:is_explosion"
+            ), Config::isValidDamageTypeOrTag);
+
     public static final ForgeConfigSpec.ConfigValue<String> BLOOD_SOUND = BUILDER
             .define("blood_sound", "block.beehive.drip");
 
@@ -199,6 +217,14 @@ public class Config {
             var entity = BuiltInRegistries.ENTITY_TYPE.get(new ResourceLocation(pair[0]));
             var item = BuiltInRegistries.ITEM.getId(BuiltInRegistries.ITEM.get(new ResourceLocation(pair[1])));
             goreTextureItems.put(entity, item);
+        }
+        goreGeneralTagObject.clear();
+        for (var string : GORE_GENERAL_DAMAGE_TYPES.get()) {
+            goreGeneralTagObject.add(string, Registries.DAMAGE_TYPE);
+        }
+        goreExplosionTagObject.clear();
+        for (var string : GORE_EXPLOSION_DAMAGE_TYPES.get()) {
+            goreExplosionTagObject.add(string, Registries.DAMAGE_TYPE);
         }
     }
 
@@ -268,6 +294,17 @@ public class Config {
 
             var item = pair[1];
             return isValidItem(item);
+        } catch (Exception exception) {
+            return false;
+        }
+    }
+
+    private static boolean isValidDamageTypeOrTag(Object object) {
+        try {
+            var string = (String) object;
+            var location = string.charAt(0) == '#' ? string.substring(1) : string;
+            new ResourceLocation(location);
+            return true;
         } catch (Exception exception) {
             return false;
         }
