@@ -122,7 +122,6 @@ public class FragmentParticle extends GoreParticle {
         this.renderRotatedQuad(buffer, renderInfo, quaternionf, partialTicks);
     }
 
-    @Override
     protected void renderRotatedQuad(VertexConsumer buffer, Camera camera, Quaternionf quaternion, float partialTicks) {
         var vec3 = camera.getPosition();
         var f = (float) (Mth.lerp(partialTicks, this.xo, this.x) - vec3.x());

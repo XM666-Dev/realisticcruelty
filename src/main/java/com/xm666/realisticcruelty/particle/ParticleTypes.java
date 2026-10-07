@@ -44,6 +44,11 @@ public class ParticleTypes {
             "fragment",
             ParticleTypes::createItemParticleType
     );
+    public static ParticleType<ColorParticleOption> blood;
+    public static ParticleType<ColorParticleOption> bloodSplat;
+    public static ParticleType<ColorParticleOption> bloodFog;
+    public static ParticleType<ColorParticleOption> bloodSplash;
+    public static ParticleType<ItemParticleOption> fragment;
 
     public static void init(IEventBus modEventBus) {
         PARTICLE_TYPES.register(modEventBus);
@@ -60,6 +65,11 @@ public class ParticleTypes {
         event.registerSpriteSet(BLOOD_FOG.get(), BloodFogParticle.Provider::new);
         event.registerSpriteSet(BLOOD_SPLASH.get(), BloodSplashParticle.Provider::new);
         event.registerSpriteSet(FRAGMENT.get(), FragmentParticle.Provider::new);
+        blood = BLOOD.get();
+        bloodSplat = BLOOD_SPLAT.get();
+        bloodFog = BLOOD_FOG.get();
+        bloodSplash = BLOOD_SPLASH.get();
+        fragment = FRAGMENT.get();
     }
 
     private static ParticleType<ColorParticleOption> createColorParticleType() {

@@ -1,6 +1,7 @@
 package com.xm666.realisticcruelty;
 
 import com.mojang.logging.LogUtils;
+import com.xm666.realisticcruelty.handler.ClientGoreHandler;
 import com.xm666.realisticcruelty.network.PayloadHandler;
 import com.xm666.realisticcruelty.particle.ParticleTypes;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -23,5 +24,6 @@ public class RealisticCruelty {
         ClientConfig.init(container);
         ParticleTypes.init(eventBus);
         PayloadHandler.init();
+        ClientGoreHandler.init(eventBus);
     }
 }

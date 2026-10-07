@@ -13,17 +13,18 @@ import java.util.Optional;
 @Mod.EventBusSubscriber(modid = RealisticCruelty.MODID)
 public class PayloadHandler {
     private static final String PROTOCOL_VERSION = "1";
-    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(
-            new ResourceLocation(RealisticCruelty.MODID, "main"),
-            () -> PROTOCOL_VERSION,
-            PROTOCOL_VERSION::equals,
-            PROTOCOL_VERSION::equals
-    );
+    public static SimpleChannel INSTANCE;
 
     public static void init() {
         if (MixinConfig.CLIENT_GORE_ENABLED.get()) return;
 
         var index = 0;
+        INSTANCE = NetworkRegistry.newSimpleChannel(
+                new ResourceLocation(RealisticCruelty.MODID, "main"),
+                () -> PROTOCOL_VERSION,
+                PROTOCOL_VERSION::equals,
+                PROTOCOL_VERSION::equals
+        );
         INSTANCE.registerMessage(index++, GorePayload.class, GorePayload::write, GorePayload::read, GorePayload::handle, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
     }
 }

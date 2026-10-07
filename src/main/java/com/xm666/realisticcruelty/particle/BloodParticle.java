@@ -24,14 +24,14 @@ public class BloodParticle extends GoreParticle {
     protected void onCollided(Direction normal) {
         var bloodSplatEnabled = Config.BLOOD_SPLAT_ENABLED.get();
         if (bloodSplatEnabled) {
-            var bloodSplat = ColorParticleOption.create(ParticleTypes.BLOOD_SPLAT.get(), this.rCol, this.gCol, this.bCol);
+            var bloodSplat = ColorParticleOption.create(ParticleTypes.bloodSplat, this.rCol, this.gCol, this.bCol);
             this.level.addParticle(bloodSplat, this.x, this.y, this.z, normal.ordinal(), 0.0D, 0.0D);
         }
 
         var bloodSplashCountMin = Config.BLOOD_SPLASH_COUNT_MIN.get();
         var bloodSplashCountMax = Config.BLOOD_SPLASH_COUNT_MAX.get();
         var bloodSplashCount = Random.nextInt(bloodSplashCountMin, bloodSplashCountMax);
-        var bloodSplash = ColorParticleOption.create(ParticleTypes.BLOOD_SPLASH.get(), this.rCol, this.gCol, this.bCol);
+        var bloodSplash = ColorParticleOption.create(ParticleTypes.bloodSplash, this.rCol, this.gCol, this.bCol);
         while (bloodSplashCount-- > 0) {
             this.level.addParticle(bloodSplash, this.x, this.y, this.z, 0.0D, 0.0D, 0.0D);
         }

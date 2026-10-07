@@ -33,14 +33,14 @@ public class ParticleHandler {
 
         var hitPosition = hitInfo.getHitPosition();
         var bloodFogSize = getBloodFogSize(amountSqrt);
-        var bloodFog = ColorParticleOption.create(ParticleTypes.BLOOD_FOG.get(), color);
+        var bloodFog = ColorParticleOption.create(ParticleTypes.bloodFog, color);
         addParticle(bloodFog, hitPosition, new Vec3(bloodFogSize, 0.0, 0.0));
     }
 
     public static ParticleOptions getBlood(int color, Item item) {
-        if (item != Items.AIR) return new ItemParticleOption(ParticleTypes.FRAGMENT.get(), new ItemStack(item, color));
+        if (item != Items.AIR) return new ItemParticleOption(ParticleTypes.fragment, new ItemStack(item, color));
 
-        return ColorParticleOption.create(ParticleTypes.BLOOD.get(), color);
+        return ColorParticleOption.create(ParticleTypes.blood, color);
     }
 
     public static float getBloodAmount(float amount) {
