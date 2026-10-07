@@ -171,6 +171,8 @@ public class Config {
 
     @SubscribeEvent
     public static void onReloading(ModConfigEvent.Reloading event) {
+        if (event.getConfig().getType() != ModConfig.Type.COMMON) return;
+
         load();
     }
 
