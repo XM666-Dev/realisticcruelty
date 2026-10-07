@@ -2,6 +2,7 @@ package com.xm666.realisticcruelty.network;
 
 import com.mojang.datafixers.util.Function7;
 import com.mojang.datafixers.util.Function8;
+import com.xm666.realisticcruelty.MixinConfig;
 import com.xm666.realisticcruelty.RealisticCruelty;
 import com.xm666.realisticcruelty.handler.GoreHandler;
 import net.minecraft.network.codec.StreamCodec;
@@ -15,6 +16,8 @@ import java.util.function.Function;
 public class PayloadHandler {
     @SubscribeEvent
     public static void registerPayloadHandlers(RegisterPayloadHandlersEvent event) {
+        if (MixinConfig.CLIENT_GORE_ENABLED.get()) return;
+
         var registrar = event.registrar("1");
         registrar.playToClient(
                 GorePayload.TYPE,

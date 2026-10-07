@@ -2,6 +2,7 @@ package com.xm666.realisticcruelty.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.xm666.realisticcruelty.Config;
+import com.xm666.realisticcruelty.math.CollisionHandler;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import com.xm666.realisticcruelty.math.Random;
 import com.xm666.realisticcruelty.math.VectorMath;
@@ -15,7 +16,6 @@ import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -48,10 +48,11 @@ public class BloodSplatParticle extends TextureSheetParticle {
     public void move(double x, double y, double z) {
         if (this.age % 10 != 0) return;
 
-        var velocity = this.getDirectionVector().reverse();
-        var movement = Entity.collideBoundingBox(null, velocity, this.getBoundingBox(), this.level, List.of());
-        if (!VectorMath.abs(movement).equals(Vec3.ZERO)) {
-            remove();
+        var velocity = this.getDirectionVector().scale(-0.01);
+        var collisionResult = CollisionHandler.collideBoundingBox(null, velocity, this.getBoundingBox(), this.level, List.of());
+        var remainder = collisionResult.remainder();
+        if (!VectorMath.abs(remainder).equals(Vec3.ZERO)) {
+            this.remove();
         }
     }
 
