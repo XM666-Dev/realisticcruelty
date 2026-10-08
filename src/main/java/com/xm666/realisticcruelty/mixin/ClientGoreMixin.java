@@ -3,7 +3,6 @@ package com.xm666.realisticcruelty.mixin;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.sugar.Local;
 import com.xm666.realisticcruelty.ClientConfig;
 import com.xm666.realisticcruelty.handler.ClientGoreHandler;
 import com.xm666.realisticcruelty.handler.GoreHandler;
@@ -18,8 +17,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-
-import java.util.Map;
 
 public class ClientGoreMixin {
     @Mixin(ClientPacketListener.class)
@@ -36,10 +33,10 @@ public class ClientGoreMixin {
 
     @Mixin(ParticleEngine.class)
     private static class ParticleEngineMixin {
-        @WrapOperation(method = "register(Lnet/minecraft/core/particles/ParticleType;Lnet/minecraft/client/particle/ParticleEngine$SpriteParticleRegistration;)V", at = @At(value = "INVOKE", target = "Ljava/util/Map;put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", ordinal = 1))
-        private Object getProvider(Map<?, ?> instance, Object k, Object v, Operation<?> original, @Local(argsOnly = true) ParticleType<?> particleType) {
-            ClientGoreHandler.addProvider(particleType, (ParticleProvider<?>) v);
-            return original.call(instance, k, v);
+        @ModifyExpressionValue(method = "register(Lnet/minecraft/core/particles/ParticleType;Lnet/minecraft/client/particle/ParticleEngine$SpriteParticleRegistration;)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/particle/ParticleEngine$SpriteParticleRegistration;create(Lnet/minecraft/client/particle/SpriteSet;)Lnet/minecraft/client/particle/ParticleProvider;"))
+        private <T extends ParticleOptions> ParticleProvider<T> getProvider(ParticleProvider<T> original, ParticleType<?> particleType) {
+            ClientGoreHandler.addProvider(particleType, original);
+            return original;
         }
 
         @ModifyExpressionValue(method = "makeParticle", at = @At(value = "INVOKE", target = "Ljava/util/Map;get(Ljava/lang/Object;)Ljava/lang/Object;"))
