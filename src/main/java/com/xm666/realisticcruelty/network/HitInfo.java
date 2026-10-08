@@ -9,22 +9,27 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public abstract class HitInfo {
-    public static Vec3 addZOffset(Vec3 position, Vec3 direction) {
-        var bloodZOffset = Config.BLOOD_Z_OFFSET.get();
-        return position.add(direction.scale(bloodZOffset));
+    public static Vec3 addBloodDepthOffset(Vec3 position, Vec3 direction) {
+        var bloodOffset = Config.BLOOD_DEPTH_OFFSET.get();
+        return position.add(direction.scale(bloodOffset));
     }
 
-    public abstract Vec3 getHitPosition();
+    public static Vec3 addBloodFogDepthOffset(Vec3 position, Vec3 direction) {
+        var bloodFogOffset = Config.BLOOD_FOG_DEPTH_OFFSET.get();
+        return position.add(direction.scale(bloodFogOffset));
+    }
 
-    public abstract Transform getParticleTransform();
+    public abstract Vec3 getBloodFogPosition();
 
-    public abstract double getParticleSpeedMinMultiplier();
+    public abstract Transform getBloodTransform();
 
-    public abstract double getParticleSpeedMaxMultiplier();
+    public abstract double getBloodSpeedMinMultiplier();
 
-    public abstract float getParticleSpreadDegrees();
+    public abstract double getBloodSpeedMaxMultiplier();
 
-    public abstract boolean isParticleFogEnabled();
+    public abstract float getBloodSpreadDegrees();
+
+    public abstract boolean isBloodFogEnabled();
 
     public static class General extends HitInfo {
         private final Vec3 hitPosition;
@@ -36,35 +41,35 @@ public abstract class HitInfo {
         }
 
         @Override
-        public Vec3 getHitPosition() {
-            return addZOffset(hitPosition, particleDirection);
+        public Vec3 getBloodFogPosition() {
+            return addBloodFogDepthOffset(hitPosition, particleDirection);
         }
 
         @Override
-        public Transform getParticleTransform() {
-            var spreadDegrees = getParticleSpreadDegrees();
+        public Transform getBloodTransform() {
+            var spreadDegrees = getBloodSpreadDegrees();
             var rotationAngle = Random.nextAngle(spreadDegrees);
             var particleRotation = VectorMath.randomRotate(particleDirection, rotationAngle);
-            return new Transform(hitPosition, particleRotation);
+            return new Transform(addBloodDepthOffset(hitPosition, particleRotation), particleRotation);
         }
 
         @Override
-        public double getParticleSpeedMinMultiplier() {
+        public double getBloodSpeedMinMultiplier() {
             return Config.BLOOD_GENERAL_SPEED_MIN_MULTIPLIER.get();
         }
 
         @Override
-        public double getParticleSpeedMaxMultiplier() {
+        public double getBloodSpeedMaxMultiplier() {
             return Config.BLOOD_GENERAL_SPEED_MAX_MULTIPLIER.get();
         }
 
         @Override
-        public float getParticleSpreadDegrees() {
+        public float getBloodSpreadDegrees() {
             return Config.BLOOD_GENERAL_SPREAD_DEGREES.get().floatValue();
         }
 
         @Override
-        public boolean isParticleFogEnabled() {
+        public boolean isBloodFogEnabled() {
             return Config.BLOOD_GENERAL_FOG_ENABLED.get();
         }
     }
@@ -80,16 +85,16 @@ public abstract class HitInfo {
         }
 
         @Override
-        public Vec3 getHitPosition() {
-            return addZOffset(hitPosition, particleDirection);
+        public Vec3 getBloodFogPosition() {
+            return addBloodFogDepthOffset(hitPosition, particleDirection);
         }
 
         @Override
-        public Transform getParticleTransform() {
-            var spreadDegrees = getParticleSpreadDegrees();
+        public Transform getBloodTransform() {
+            var spreadDegrees = getBloodSpreadDegrees();
             var rotationAngle = Random.nextAngle(spreadDegrees);
             var particleRotation = VectorMath.randomRotate(particleDirection, rotationAngle);
-            return new Transform(hitPosition, particleRotation);
+            return new Transform(addBloodDepthOffset(hitPosition, particleRotation), particleRotation);
         }
     }
 
@@ -99,22 +104,22 @@ public abstract class HitInfo {
         }
 
         @Override
-        public double getParticleSpeedMinMultiplier() {
+        public double getBloodSpeedMinMultiplier() {
             return Config.BLOOD_MELEE_SPEED_MIN_MULTIPLIER.get();
         }
 
         @Override
-        public double getParticleSpeedMaxMultiplier() {
+        public double getBloodSpeedMaxMultiplier() {
             return Config.BLOOD_MELEE_SPEED_MAX_MULTIPLIER.get();
         }
 
         @Override
-        public float getParticleSpreadDegrees() {
+        public float getBloodSpreadDegrees() {
             return Config.BLOOD_MELEE_SPREAD_DEGREES.get().floatValue();
         }
 
         @Override
-        public boolean isParticleFogEnabled() {
+        public boolean isBloodFogEnabled() {
             return Config.BLOOD_MELEE_FOG_ENABLED.get();
         }
     }
@@ -125,22 +130,22 @@ public abstract class HitInfo {
         }
 
         @Override
-        public double getParticleSpeedMinMultiplier() {
+        public double getBloodSpeedMinMultiplier() {
             return Config.BLOOD_PROJECTILE_SPEED_MIN_MULTIPLIER.get();
         }
 
         @Override
-        public double getParticleSpeedMaxMultiplier() {
+        public double getBloodSpeedMaxMultiplier() {
             return Config.BLOOD_PROJECTILE_SPEED_MAX_MULTIPLIER.get();
         }
 
         @Override
-        public float getParticleSpreadDegrees() {
+        public float getBloodSpreadDegrees() {
             return Config.BLOOD_PROJECTILE_SPREAD_DEGREES.get().floatValue();
         }
 
         @Override
-        public boolean isParticleFogEnabled() {
+        public boolean isBloodFogEnabled() {
             return Config.BLOOD_PROJECTILE_FOG_ENABLED.get();
         }
     }
@@ -170,38 +175,38 @@ public abstract class HitInfo {
         }
 
         @Override
-        public Vec3 getHitPosition() {
-            return addZOffset(hitPosition, particleDirection);
+        public Vec3 getBloodFogPosition() {
+            return addBloodFogDepthOffset(hitPosition, particleDirection);
         }
 
         @Override
-        public Transform getParticleTransform() {
-            var spreadDegrees = getParticleSpreadDegrees();
+        public Transform getBloodTransform() {
+            var spreadDegrees = getBloodSpreadDegrees();
             var rotationAngle = Random.nextAngle(spreadDegrees);
             var hitRotation = VectorMath.randomRotate(hitDirection, rotationAngle);
             var destinationPosition = sourcePosition.add(hitRotation);
             var particlePosition = ClipHandler.expandedClip(targetBoundingBox, sourcePosition, destinationPosition);
             var particleRotation = VectorMath.reflect(hitRotation, particleDirection);
-            return new Transform(particlePosition, particleRotation);
+            return new Transform(addBloodDepthOffset(particlePosition, particleRotation), particleRotation);
         }
 
         @Override
-        public double getParticleSpeedMinMultiplier() {
+        public double getBloodSpeedMinMultiplier() {
             return Config.BLOOD_EXPLOSION_SPEED_MIN_MULTIPLIER.get();
         }
 
         @Override
-        public double getParticleSpeedMaxMultiplier() {
+        public double getBloodSpeedMaxMultiplier() {
             return Config.BLOOD_EXPLOSION_SPEED_MAX_MULTIPLIER.get();
         }
 
         @Override
-        public float getParticleSpreadDegrees() {
+        public float getBloodSpreadDegrees() {
             return Config.BLOOD_EXPLOSION_SPREAD_DEGREES.get().floatValue();
         }
 
         @Override
-        public boolean isParticleFogEnabled() {
+        public boolean isBloodFogEnabled() {
             return Config.BLOOD_EXPLOSION_FOG_ENABLED.get();
         }
     }

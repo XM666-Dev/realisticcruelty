@@ -10,46 +10,47 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.client.model.data.ModelData;
+import net.minecraft.world.phys.Vec3;
+import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.Quaternionf;
 
+import java.util.List;
+
 public class FragmentParticle extends GoreParticle {
+    private static final double MAXIMUM_COLLISION_VELOCITY_SQUARED = Mth.square(100.0);
     private final float rotAngleFrom;
     private final float rotAngleTo;
+    private boolean stoppedByCollision;
 
     private FragmentParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, ItemStack stack) {
-        super(level, x, y, z, xd, yd, zd, 5, 60);
-        var color = stack.getCount();
+        super(level, x, y, z, xd, yd, zd, getRed(stack), getGreen(stack), getBlue(stack), 5, 60);
         this.lifetime = 80;
         this.quadSize = 0.2F;
         this.rotAngleFrom = Random.nextFloat(Mth.TWO_PI);
         this.rotAngleTo = getRotAngleTo();
         this.oRoll = this.rotAngleFrom;
         this.roll = this.rotAngleFrom;
-        this.rCol = getRed(color);
-        this.gCol = getGreen(color);
-        this.bCol = getBlue(color);
         this.setSprite(this.getSprites(stack));
     }
 
-    private static float getRed(int color) {
-        return (float) FastColor.ARGB32.red(color) / 255.0F;
+    private static float getRed(ItemStack stack) {
+        return (float) FastColor.ARGB32.red(stack.getCount()) / 255.0F;
     }
 
-    private static float getGreen(int color) {
-        return (float) FastColor.ARGB32.green(color) / 255.0F;
+    private static float getGreen(ItemStack stack) {
+        return (float) FastColor.ARGB32.green(stack.getCount()) / 255.0F;
     }
 
-    private static float getBlue(int color) {
-        return (float) FastColor.ARGB32.blue(color) / 255.0F;
+    private static float getBlue(ItemStack stack) {
+        return (float) FastColor.ARGB32.blue(stack.getCount()) / 255.0F;
     }
 
     private float getRotAngleTo() {
@@ -73,16 +74,60 @@ public class FragmentParticle extends GoreParticle {
         if (this.age >= end) return;
 
         var delta = FADE_IN.apply((float) this.age / end);
-        this.roll = Mth.lerp(delta, this.rotAngleFrom, this.rotAngleTo);
+        this.roll = Mth.rotLerp(delta, this.rotAngleFrom, this.rotAngleTo);
     }
 
     @Override
-    protected void onCollided(Direction normal) {
+    public void move(double x, double y, double z) {
+        if (!this.stoppedByCollision) {
+            var xd = x;
+            var yd = y;
+            var zd = z;
+            if (this.hasPhysics
+                    && (x != 0.0 || y != 0.0 || z != 0.0)
+                    && x * x + y * y + z * z < MAXIMUM_COLLISION_VELOCITY_SQUARED) {
+                var remainder = Entity.collideBoundingBox(null, new Vec3(x, y, z), this.getBoundingBox(), this.level, List.of());
+                x = remainder.x;
+                y = remainder.y;
+                z = remainder.z;
+            }
+
+            if (x != 0.0 || y != 0.0 || z != 0.0) {
+                this.setBoundingBox(this.getBoundingBox().move(x, y, z));
+                this.setLocationFromBoundingbox();
+            }
+
+            if (Math.abs(yd) >= 1.0E-5 && Math.abs(y) < 1.0E-5) {
+                this.stoppedByCollision = true;
+            }
+
+            this.onGround = yd != y && yd < 0.0;
+            if (xd != x) {
+                this.xd = 0.0;
+            }
+
+            if (zd != z) {
+                this.zd = 0.0;
+            }
+
+            if (xd != x || yd != y || zd != z) {
+                var end = this.lifetime + 1 - endDuration;
+                if (this.age >= end) return;
+
+                this.age = end;
+                this.onCollided();
+            }
+        }
+    }
+
+    protected void onCollided() {
+        this.yd = Random.nextDouble(0.1, 0.2);
+
         var fragmentSound = Config.FRAGMENT_SOUND.get();
         if (fragmentSound.isEmpty()) return;
 
         var fragmentVolumeMultiplier = Config.FRAGMENT_VOLUME_MULTIPLIER.get().floatValue();
-        var sound = BuiltInRegistries.SOUND_EVENT.get(new ResourceLocation(fragmentSound));
+        var sound = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse(fragmentSound));
         var volume = Random.nextFloat(0.3F, 1.0F) * fragmentVolumeMultiplier;
         this.level.playLocalSound(this.x, this.y, this.z, sound, SoundSource.BLOCKS, volume, 1.0F, false);
     }
@@ -107,7 +152,7 @@ public class FragmentParticle extends GoreParticle {
 
     @Override
     protected void renderRotatedQuad(VertexConsumer buffer, Quaternionf quaternion, float x, float y, float z, float partialTicks) {
-        y += 0.1F;
+        y += 0.2F;
         super.renderRotatedQuad(buffer, quaternion, x, y, z, partialTicks);
     }
 

@@ -5,19 +5,18 @@ import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.math.CollisionHandler;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import com.xm666.realisticcruelty.math.Random;
-import com.xm666.realisticcruelty.math.VectorMath;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-
-import java.util.List;
 
 public class BloodSplatParticle extends ExtendedTextureSheetParticle {
     private static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
@@ -43,20 +42,11 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
 
     @Override
     public void move(double x, double y, double z) {
-        if (this.age == 1) {
-            var velocity = this.getDirectionVector().reverse();
-            var collisionResult = CollisionHandler.collideBoundingBox(null, velocity, this.getBoundingBox(), this.level, List.of());
-            var remainder = collisionResult.remainder();
-            this.setPos(this.x + remainder.x, this.y + remainder.y, this.z + remainder.z);
-            return;
-        }
-
         if (this.age % 10 != 0) return;
 
         var velocity = this.getDirectionVector().scale(-0.01);
-        var collisionResult = CollisionHandler.collideBoundingBox(null, velocity, this.getBoundingBox(), this.level, List.of());
-        var remainder = collisionResult.remainder();
-        if (!VectorMath.abs(remainder).equals(Vec3.ZERO)) {
+        var collisionResult = CollisionHandler.collideBoundingBox(velocity, this.getPos(), this.level);
+        if (!collisionResult.collided()) {
             this.remove();
         }
     }
@@ -89,11 +79,6 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
         var camera = gameRenderer.getMainCamera();
         var distance = camera.getPosition().distanceTo(this.getPos());
         var offsetLength = Math.sqrt(distance) * 0.01;
-        if (this.rotation == Direction.DOWN) {
-            offsetLength -= this.bbHeight;
-        } else if (this.rotation != Direction.UP) {
-            offsetLength -= this.bbHeight * 0.5;
-        }
         var offset = this.getDirectionVector().scale(offsetLength);
         x = (float) (x + offset.x);
         y = (float) (y + offset.y);
@@ -101,12 +86,32 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
         super.renderRotatedQuad(buffer, quaternion, x, y, z, partialTicks);
     }
 
+    @Override
+    public void render(VertexConsumer buffer, Camera renderInfo, float partialTicks) {
+        var quaternionf = new Quaternionf();
+        this.getFacingCameraMode().setRotation(quaternionf, renderInfo, partialTicks);
+        if (this.roll != 0.0F) {
+            quaternionf.rotateZ(Mth.lerp(partialTicks, this.oRoll, this.roll));
+        }
+
+        this.renderRotatedQuad(buffer, renderInfo, quaternionf, partialTicks);
+    }
+
+    @Override
+    protected void renderRotatedQuad(VertexConsumer buffer, Camera camera, Quaternionf quaternion, float partialTicks) {
+        var vec3 = camera.getPosition();
+        var f = (float) (Mth.lerp(partialTicks, this.xo, this.x) - vec3.x());
+        var f1 = (float) (Mth.lerp(partialTicks, this.yo, this.y) - vec3.y());
+        var f2 = (float) (Mth.lerp(partialTicks, this.zo, this.z) - vec3.z());
+        this.renderRotatedQuad(buffer, quaternion, f, f1, f2, partialTicks);
+    }
+
     private Vec3 getDirectionVector() {
         return new Vec3(this.rotation.step());
     }
 
     private Quaternionf getDirectionQuaternion() {
-        return new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, -1.0F), this.rotation.step());
+        return new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, 1.0F), this.rotation.step());
     }
 
     public record Provider(SpriteSet sprites) implements ParticleProvider<ColorParticleOption> {

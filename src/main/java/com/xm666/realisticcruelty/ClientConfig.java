@@ -8,7 +8,7 @@ public class ClientConfig {
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
     public static final ForgeConfigSpec.DoubleValue CLIENT_BLOOD_AMOUNT_MIN = BUILDER
-            .defineInRange("client_blood_amount_min", 2.0, 0.0, Double.POSITIVE_INFINITY);
+            .defineInRange("client_blood_amount_min", 4.0, 0.0, Double.POSITIVE_INFINITY);
 
     public static final ForgeConfigSpec.DoubleValue CLIENT_BLOOD_AMOUNT_MAX = BUILDER
             .defineInRange("client_blood_amount_max", 8.0, 0.0, Double.POSITIVE_INFINITY);
