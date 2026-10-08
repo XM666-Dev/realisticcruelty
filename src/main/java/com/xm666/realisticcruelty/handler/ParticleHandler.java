@@ -3,6 +3,7 @@ package com.xm666.realisticcruelty.handler;
 import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.math.Random;
 import com.xm666.realisticcruelty.network.HitInfo;
+import com.xm666.realisticcruelty.particle.ColorParticleOption;
 import com.xm666.realisticcruelty.particle.ParticleTypes;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ItemParticleOption;
@@ -32,14 +33,14 @@ public class ParticleHandler {
 
         var bloodFogPosition = hitInfo.getBloodFogPosition();
         var bloodFogSize = getBloodFogSize(amountSqrt);
-        var bloodFog = ColorParticleOption.create(ParticleTypes.BLOOD_FOG.get(), color);
+        var bloodFog = ColorParticleOption.create(ParticleTypes.bloodFog, color);
         addParticle(bloodFog, bloodFogPosition, new Vec3(bloodFogSize, 0.0, 0.0));
     }
 
     public static ParticleOptions getBlood(int color, Item item) {
-        if (item != Items.AIR) return new ItemParticleOption(ParticleTypes.FRAGMENT.get(), new ItemStack(item, color));
+        if (item != Items.AIR) return new ItemParticleOption(ParticleTypes.fragment, new ItemStack(item, color));
 
-        return ColorParticleOption.create(ParticleTypes.BLOOD.get(), color);
+        return ColorParticleOption.create(ParticleTypes.blood, color);
     }
 
     public static float getBloodAmount(float amount) {

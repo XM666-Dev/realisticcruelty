@@ -89,7 +89,7 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
     }
 
     private Quaternionf getDirectionQuaternion() {
-        return new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, 1.0F), this.rotation.step());
+        return new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, -1.0F), this.rotation.step());
     }
 
     public record Provider(SpriteSet sprites) implements ParticleProvider<ColorParticleOption> {
