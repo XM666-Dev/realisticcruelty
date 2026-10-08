@@ -70,7 +70,7 @@ public class FragmentParticle extends GoreParticle {
     public void tick() {
         super.tick();
         this.oRoll = this.roll;
-        var end = this.lifetime + 1 - endDuration;
+        var end = this.lifetime + 1 - this.endDuration;
         if (this.age >= end) return;
 
         var delta = FADE_IN.apply((float) this.age / end);
@@ -111,7 +111,7 @@ public class FragmentParticle extends GoreParticle {
             }
 
             if (xd != x || yd != y || zd != z) {
-                var end = this.lifetime + 1 - endDuration;
+                var end = this.lifetime + 1 - this.endDuration;
                 if (this.age >= end) return;
 
                 this.age = end;

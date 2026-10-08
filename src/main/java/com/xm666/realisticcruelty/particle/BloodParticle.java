@@ -7,6 +7,7 @@ import com.xm666.realisticcruelty.math.Random;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -16,6 +17,8 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
 public class BloodParticle extends GoreParticle {
+    private static final double BUOYANCY = 1.0;
+    private static final double FLUID_RESISTANCE = 0.95;
     private static final double MAXIMUM_COLLISION_VELOCITY_SQUARED = Mth.square(100.0);
     private boolean stoppedByCollision;
 
@@ -29,6 +32,13 @@ public class BloodParticle extends GoreParticle {
     @Override
     public void move(double x, double y, double z) {
         if (!this.stoppedByCollision) {
+            var inFluid = this.isInFluid();
+            if (inFluid) {
+                this.yd += 0.04 * BUOYANCY;
+                this.xd *= FLUID_RESISTANCE;
+                this.yd *= FLUID_RESISTANCE;
+                this.zd *= FLUID_RESISTANCE;
+            }
             var result = (CollisionResult) null;
             var xd = x;
             var yd = y;
@@ -62,11 +72,19 @@ public class BloodParticle extends GoreParticle {
             }
 
             if (result != null && result.collided()) {
-                var end = this.lifetime + 1 - endDuration;
+                var end = this.lifetime + 1 - this.endDuration;
                 if (this.age >= end) return;
 
                 this.age = end;
+                if (inFluid) return;
+
                 this.onCollided(result.normal());
+            }
+            if (inFluid && this.age > 20) {
+                var end = this.lifetime + 1 - this.endDuration;
+                if (this.age >= end) return;
+
+                this.age = end;
             }
         }
     }
@@ -95,6 +113,17 @@ public class BloodParticle extends GoreParticle {
         var sound = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse(bloodSound));
         var volume = Random.nextFloat(0.3F, 1.0F) * bloodVolumeMultiplier;
         this.level.playLocalSound(this.x, this.y, this.z, sound, SoundSource.BLOCKS, volume, 1.0F, false);
+    }
+
+    private boolean isInFluid() {
+        var pos = this.getPos();
+        var blockPos = BlockPos.containing(pos);
+        var fluidState = this.level.getFluidState(blockPos);
+        if (fluidState.isEmpty()) return false;
+
+        var fluidY = blockPos.getY();
+        var fluidHeight = fluidState.getHeight(this.level, blockPos);
+        return fluidY + fluidHeight > this.y;
     }
 
     @Override
