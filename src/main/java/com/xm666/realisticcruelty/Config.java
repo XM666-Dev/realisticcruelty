@@ -96,8 +96,11 @@ public class Config {
     public static final ModConfigSpec.BooleanValue BLOOD_EXPLOSION_FOG_ENABLED = BUILDER
             .define("blood_explosion_fog_enabled", true);
 
-    public static final ModConfigSpec.DoubleValue BLOOD_Z_OFFSET = BUILDER
-            .defineInRange("blood_z_offset", 0.25, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+    public static final ModConfigSpec.DoubleValue BLOOD_DEPTH_OFFSET = BUILDER
+            .defineInRange("blood_depth_offset", 0.125, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
+
+    public static final ModConfigSpec.DoubleValue BLOOD_FOG_DEPTH_OFFSET = BUILDER
+            .defineInRange("blood_fog_depth_offset", 0.25, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
 
     public static final ModConfigSpec.BooleanValue BLOOD_SPLAT_ENABLED = BUILDER
             .define("blood_splat_enabled", true);
@@ -147,7 +150,7 @@ public class Config {
                     "blaze,blaze_rod",
                     "breeze,breeze_rod",
                     "shulker,shulker_shell",
-                    "iron_golem,iron_nugget",
+                    "iron_golem,iron_ingot",
                     "snow_golem,snowball"
             ), () -> "", Config::isValidEntityItem);
 

@@ -13,7 +13,7 @@ public class ClientConfig {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     public static final ModConfigSpec.DoubleValue CLIENT_BLOOD_AMOUNT_MIN = BUILDER
-            .defineInRange("client_blood_amount_min", 2.0, 0.0, Double.POSITIVE_INFINITY);
+            .defineInRange("client_blood_amount_min", 4.0, 0.0, Double.POSITIVE_INFINITY);
 
     public static final ModConfigSpec.DoubleValue CLIENT_BLOOD_AMOUNT_MAX = BUILDER
             .defineInRange("client_blood_amount_max", 8.0, 0.0, Double.POSITIVE_INFINITY);

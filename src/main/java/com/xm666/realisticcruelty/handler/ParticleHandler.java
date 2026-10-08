@@ -22,19 +22,19 @@ public class ParticleHandler {
         var bloodAmount = getBloodAmount(amount);
         var blood = getBlood(color, item);
         while (bloodAmount >= 1 || bloodAmount > 0 && Random.nextFloat() < bloodAmount) {
-            var transform = hitInfo.getParticleTransform();
-            var position = transform.position();
+            var bloodTransform = hitInfo.getBloodTransform();
+            var position = bloodTransform.position();
             var speed = Random.nextDouble(bloodSpeedMin, bloodSpeedMax);
-            var velocity = transform.rotation().scale(speed);
+            var velocity = bloodTransform.rotation().scale(speed);
             addParticle(blood, position, velocity);
             --bloodAmount;
         }
-        if (!hitInfo.isParticleFogEnabled() || item != Items.AIR) return;
+        if (!hitInfo.isBloodFogEnabled() || item != Items.AIR) return;
 
-        var hitPosition = hitInfo.getHitPosition();
+        var bloodFogPosition = hitInfo.getBloodFogPosition();
         var bloodFogSize = getBloodFogSize(amountSqrt);
         var bloodFog = ColorParticleOption.create(ParticleTypes.BLOOD_FOG.get(), color);
-        addParticle(bloodFog, hitPosition, new Vec3(bloodFogSize, 0.0, 0.0));
+        addParticle(bloodFog, bloodFogPosition, new Vec3(bloodFogSize, 0.0, 0.0));
     }
 
     public static ParticleOptions getBlood(int color, Item item) {
@@ -57,11 +57,11 @@ public class ParticleHandler {
     }
 
     public static double getBloodSpeedMin(double bloodSpeed, HitInfo hitInfo) {
-        return bloodSpeed * hitInfo.getParticleSpeedMinMultiplier();
+        return bloodSpeed * hitInfo.getBloodSpeedMinMultiplier();
     }
 
     public static double getBloodSpeedMax(double bloodSpeed, HitInfo hitInfo) {
-        return bloodSpeed * hitInfo.getParticleSpeedMaxMultiplier();
+        return bloodSpeed * hitInfo.getBloodSpeedMaxMultiplier();
     }
 
     public static double getBloodFogSize(double amountSqrt) {

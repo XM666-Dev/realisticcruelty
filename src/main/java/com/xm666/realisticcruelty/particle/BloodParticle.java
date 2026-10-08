@@ -1,6 +1,8 @@
 package com.xm666.realisticcruelty.particle;
 
 import com.xm666.realisticcruelty.Config;
+import com.xm666.realisticcruelty.math.CollisionHandler;
+import com.xm666.realisticcruelty.math.CollisionResult;
 import com.xm666.realisticcruelty.math.Random;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
@@ -10,19 +12,68 @@ import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 
 public class BloodParticle extends GoreParticle {
+    private static final double MAXIMUM_COLLISION_VELOCITY_SQUARED = Mth.square(100.0);
+    private boolean stoppedByCollision;
+
     private BloodParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, float r, float g, float b, SpriteSet sprites) {
-        super(level, x, y, z, xd, yd, zd, 5, 10);
+        super(level, x, y, z, xd, yd, zd, r, g, b, 5, 10);
         this.lifetime = 60;
-        this.rCol = r;
-        this.gCol = g;
-        this.bCol = b;
+        this.quadSize = 0.1F;
         this.pickSprite(sprites);
     }
 
     @Override
+    public void move(double x, double y, double z) {
+        if (!this.stoppedByCollision) {
+            var result = (CollisionResult) null;
+            var xd = x;
+            var yd = y;
+            var zd = z;
+            if (this.hasPhysics
+                    && (x != 0.0 || y != 0.0 || z != 0.0)
+                    && x * x + y * y + z * z < MAXIMUM_COLLISION_VELOCITY_SQUARED) {
+                result = CollisionHandler.collideBoundingBox(new Vec3(x, y, z), this.getPos(), this.level);
+                var remainder = result.remainder();
+                x = remainder.x;
+                y = remainder.y;
+                z = remainder.z;
+            }
+
+            if (x != 0.0 || y != 0.0 || z != 0.0) {
+                this.setBoundingBox(this.getBoundingBox().move(x, y, z));
+                this.setLocationFromBoundingbox();
+            }
+
+            if (Math.abs(yd) >= 1.0E-5 && Math.abs(y) < 1.0E-5) {
+                this.stoppedByCollision = true;
+            }
+
+            this.onGround = yd != y && yd < 0.0;
+            if (xd != x) {
+                this.xd = 0.0;
+            }
+
+            if (zd != z) {
+                this.zd = 0.0;
+            }
+
+            if (result != null && result.collided()) {
+                var end = this.lifetime + 1 - endDuration;
+                if (this.age >= end) return;
+
+                this.age = end;
+                this.onCollided(result.normal());
+            }
+        }
+    }
+
     protected void onCollided(Direction normal) {
+        this.stoppedByCollision = true;
+
         var bloodSplatEnabled = Config.BLOOD_SPLAT_ENABLED.get();
         if (bloodSplatEnabled) {
             var bloodSplat = ColorParticleOption.create(ParticleTypes.BLOOD_SPLAT.get(), this.rCol, this.gCol, this.bCol);

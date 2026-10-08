@@ -12,8 +12,6 @@ import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
-import java.util.List;
-
 public class BloodSplashParticle extends TextureSheetParticle {
     private static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
     private static final InverseFunction FADE_OUT = new InverseFunction(0.2F, 0.2F, false);
@@ -56,8 +54,7 @@ public class BloodSplashParticle extends TextureSheetParticle {
             if (this.hasPhysics
                     && (x != 0.0 || y != 0.0 || z != 0.0)
                     && x * x + y * y + z * z < MAXIMUM_COLLISION_VELOCITY_SQUARED) {
-                var result = CollisionHandler.collideBoundingBox(null, new Vec3(x, y, z), this.getBoundingBox(), this.level, List.of());
-                var remainder = result.remainder();
+                var remainder = CollisionHandler.collideBoundingBox(new Vec3(x, y, z), this.getPos(), this.level).remainder();
                 x = remainder.x;
                 y = remainder.y;
                 z = remainder.z;
@@ -68,7 +65,7 @@ public class BloodSplashParticle extends TextureSheetParticle {
                 this.setLocationFromBoundingbox();
             }
 
-            if (Math.abs(yd) >= 1.0E-5F && Math.abs(y) < 1.0E-5F) {
+            if (Math.abs(yd) >= 1.0E-5 && Math.abs(y) < 1.0E-5) {
                 this.stoppedByCollision = true;
             }
 

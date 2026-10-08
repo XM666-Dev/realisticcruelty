@@ -5,7 +5,6 @@ import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.math.CollisionHandler;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import com.xm666.realisticcruelty.math.Random;
-import com.xm666.realisticcruelty.math.VectorMath;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -19,8 +18,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-
-import java.util.List;
 
 public class BloodSplatParticle extends TextureSheetParticle {
     private static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
@@ -46,20 +43,11 @@ public class BloodSplatParticle extends TextureSheetParticle {
 
     @Override
     public void move(double x, double y, double z) {
-        if (this.age == 1) {
-            var velocity = this.getDirectionVector().reverse();
-            var collisionResult = CollisionHandler.collideBoundingBox(null, velocity, this.getBoundingBox(), this.level, List.of());
-            var remainder = collisionResult.remainder();
-            this.setPos(this.x + remainder.x, this.y + remainder.y, this.z + remainder.z);
-            return;
-        }
-
         if (this.age % 10 != 0) return;
 
         var velocity = this.getDirectionVector().scale(-0.01);
-        var collisionResult = CollisionHandler.collideBoundingBox(null, velocity, this.getBoundingBox(), this.level, List.of());
-        var remainder = collisionResult.remainder();
-        if (!VectorMath.abs(remainder).equals(Vec3.ZERO)) {
+        var collisionResult = CollisionHandler.collideBoundingBox(velocity, this.getPos(), this.level);
+        if (!collisionResult.collided()) {
             this.remove();
         }
     }
@@ -92,11 +80,6 @@ public class BloodSplatParticle extends TextureSheetParticle {
         var camera = gameRenderer.getMainCamera();
         var distance = camera.getPosition().distanceTo(this.getPos());
         var offsetLength = Math.sqrt(distance) * 0.01;
-        if (this.rotation == Direction.DOWN) {
-            offsetLength -= this.bbHeight;
-        } else if (this.rotation != Direction.UP) {
-            offsetLength -= this.bbHeight * 0.5;
-        }
         var offset = this.getDirectionVector().scale(offsetLength);
         x = (float) (x + offset.x);
         y = (float) (y + offset.y);
