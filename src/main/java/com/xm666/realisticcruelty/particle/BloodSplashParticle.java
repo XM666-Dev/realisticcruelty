@@ -11,7 +11,7 @@ import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
-public class BloodSplashParticle extends ExtendedTextureSheetParticle {
+public class BloodSplashParticle extends TextureSheetParticle {
     private static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
     private static final InverseFunction FADE_OUT = new InverseFunction(0.2F, 0.2F, false);
     private static final double MAXIMUM_COLLISION_VELOCITY_SQUARED = Mth.square(100.0);

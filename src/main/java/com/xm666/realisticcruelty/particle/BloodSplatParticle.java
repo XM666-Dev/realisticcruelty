@@ -5,13 +5,11 @@ import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.math.CollisionHandler;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import com.xm666.realisticcruelty.math.Random;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
@@ -64,7 +62,7 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
 
     @Override
     public FacingCameraMode getFacingCameraMode() {
-        return (quaternionf, camera, v) -> quaternionf.set(this.getDirectionQuaternion());
+        return (quaternionf, camera, particleTick) -> quaternionf.set(this.getDirectionQuaternion());
     }
 
     @Override
@@ -84,26 +82,6 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
         y = (float) (y + offset.y);
         z = (float) (z + offset.z);
         super.renderRotatedQuad(buffer, quaternion, x, y, z, partialTicks);
-    }
-
-    @Override
-    public void render(VertexConsumer buffer, Camera renderInfo, float partialTicks) {
-        var quaternionf = new Quaternionf();
-        this.getFacingCameraMode().setRotation(quaternionf, renderInfo, partialTicks);
-        if (this.roll != 0.0F) {
-            quaternionf.rotateZ(Mth.lerp(partialTicks, this.oRoll, this.roll));
-        }
-
-        this.renderRotatedQuad(buffer, renderInfo, quaternionf, partialTicks);
-    }
-
-    @Override
-    protected void renderRotatedQuad(VertexConsumer buffer, Camera camera, Quaternionf quaternion, float partialTicks) {
-        var vec3 = camera.getPosition();
-        var f = (float) (Mth.lerp(partialTicks, this.xo, this.x) - vec3.x());
-        var f1 = (float) (Mth.lerp(partialTicks, this.yo, this.y) - vec3.y());
-        var f2 = (float) (Mth.lerp(partialTicks, this.zo, this.z) - vec3.z());
-        this.renderRotatedQuad(buffer, quaternion, f, f1, f2, partialTicks);
     }
 
     private Vec3 getDirectionVector() {

@@ -3,9 +3,8 @@ package com.xm666.realisticcruelty.particle;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.client.particle.TextureSheetParticle;
 
-public class GoreParticle extends TextureSheetParticle {
+public class GoreParticle extends ExtendedTextureSheetParticle {
     protected static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
     protected static final InverseFunction FADE_OUT = new InverseFunction(0.2F, 0.2F, false);
     protected final int startDuration;

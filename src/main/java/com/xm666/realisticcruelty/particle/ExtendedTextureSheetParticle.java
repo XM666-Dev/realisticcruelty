@@ -11,14 +11,15 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public abstract class ExtendedTextureSheetParticle extends TextureSheetParticle {
-    protected ExtendedTextureSheetParticle(ClientLevel p_108323_, double p_108324_, double p_108325_, double p_108326_) {
-        super(p_108323_, p_108324_, p_108325_, p_108326_);
+    protected ExtendedTextureSheetParticle(ClientLevel level, double x, double y, double z) {
+        super(level, x, y, z);
     }
 
     public FacingCameraMode getFacingCameraMode() {
         return FacingCameraMode.LOOKAT_XYZ;
     }
 
+    @Override
     public void render(VertexConsumer buffer, Camera camera, float partialTicks) {
         var vec3 = camera.getPosition();
         var f = (float) (Mth.lerp(partialTicks, this.xo, this.x) - vec3.x());
@@ -30,7 +31,7 @@ public abstract class ExtendedTextureSheetParticle extends TextureSheetParticle 
             quaternionf.rotateZ(Mth.lerp(partialTicks, this.oRoll, this.roll));
         }
 
-        renderRotatedQuad(buffer, quaternionf, f, f1, f2, partialTicks);
+        this.renderRotatedQuad(buffer, quaternionf, f, f1, f2, partialTicks);
     }
 
     protected void renderRotatedQuad(VertexConsumer buffer, Quaternionf quaternion, float x, float y, float z, float partialTicks) {
@@ -44,11 +45,11 @@ public abstract class ExtendedTextureSheetParticle extends TextureSheetParticle 
             vector3f.add(x, y, z);
         }
 
-        float f6 = this.getU0();
-        float f7 = this.getU1();
-        float f4 = this.getV0();
-        float f5 = this.getV1();
-        int j = this.getLightColor(partialTicks);
+        var f6 = this.getU0();
+        var f7 = this.getU1();
+        var f4 = this.getV0();
+        var f5 = this.getV1();
+        var j = this.getLightColor(partialTicks);
         buffer.vertex(avector3f[0].x(), avector3f[0].y(), avector3f[0].z()).uv(f7, f5).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(j).endVertex();
         buffer.vertex(avector3f[1].x(), avector3f[1].y(), avector3f[1].z()).uv(f7, f4).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(j).endVertex();
         buffer.vertex(avector3f[2].x(), avector3f[2].y(), avector3f[2].z()).uv(f6, f4).color(this.rCol, this.gCol, this.bCol, this.alpha).uv2(j).endVertex();
@@ -57,9 +58,9 @@ public abstract class ExtendedTextureSheetParticle extends TextureSheetParticle 
 
     @OnlyIn(Dist.CLIENT)
     public interface FacingCameraMode {
-        FacingCameraMode LOOKAT_XYZ = (p_312316_, p_311843_, p_312119_) -> p_312316_.set(p_311843_.rotation());
-        FacingCameraMode LOOKAT_Y = (p_312695_, p_312346_, p_312064_) -> p_312695_.set(0.0F, p_312346_.rotation().y, 0.0F, p_312346_.rotation().w);
+        FacingCameraMode LOOKAT_XYZ = (quaternionf, camera, partialTick) -> quaternionf.set(camera.rotation());
+        FacingCameraMode LOOKAT_Y = (quaternionf, camera, partialTick) -> quaternionf.set(0.0F, camera.rotation().y, 0.0F, camera.rotation().w);
 
-        void setRotation(Quaternionf var1, Camera var2, float var3);
+        void setRotation(Quaternionf quaternionf, Camera camera, float partialTick);
     }
 }

@@ -9,12 +9,12 @@ import net.minecraft.util.FastColor;
 
 public class ColorParticleOption implements ParticleOptions {
     public static final ParticleOptions.Deserializer<ColorParticleOption> DESERIALIZER = new ParticleOptions.Deserializer<>() {
-        public ColorParticleOption fromCommand(ParticleType<ColorParticleOption> p_123721_, StringReader p_123722_) {
-            return new ColorParticleOption(p_123721_, 0);
+        public ColorParticleOption fromCommand(ParticleType<ColorParticleOption> particleType, StringReader stringReader) {
+            return new ColorParticleOption(particleType, 0);
         }
 
-        public ColorParticleOption fromNetwork(ParticleType<ColorParticleOption> p_123724_, FriendlyByteBuf p_123725_) {
-            return new ColorParticleOption(p_123724_, p_123725_.readInt());
+        public ColorParticleOption fromNetwork(ParticleType<ColorParticleOption> particleType, FriendlyByteBuf friendlyByteBuf) {
+            return new ColorParticleOption(particleType, friendlyByteBuf.readInt());
         }
     };
     private final ParticleType<ColorParticleOption> type;
@@ -26,7 +26,7 @@ public class ColorParticleOption implements ParticleOptions {
     }
 
     public static Codec<ColorParticleOption> codec(ParticleType<ColorParticleOption> particleType) {
-        return Codec.INT.xmap(p_333828_ -> new ColorParticleOption(particleType, p_333828_), p_333908_ -> p_333908_.color);
+        return Codec.INT.xmap(color -> new ColorParticleOption(particleType, color), colorParticleOption -> colorParticleOption.color);
     }
 
     public static ColorParticleOption create(ParticleType<ColorParticleOption> type, int color) {
@@ -43,8 +43,8 @@ public class ColorParticleOption implements ParticleOptions {
     }
 
     @Override
-    public void writeToNetwork(FriendlyByteBuf p_123732_) {
-        p_123732_.writeInt(this.color);
+    public void writeToNetwork(FriendlyByteBuf friendlyByteBuf) {
+        friendlyByteBuf.writeInt(this.color);
     }
 
     @Override
