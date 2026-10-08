@@ -2,6 +2,7 @@ package com.xm666.realisticcruelty.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.xm666.realisticcruelty.Config;
+import com.xm666.realisticcruelty.math.InverseFunction;
 import com.xm666.realisticcruelty.math.Random;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -9,6 +10,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -24,21 +26,33 @@ import org.joml.Quaternionf;
 
 import java.util.List;
 
-public class FragmentParticle extends GoreParticle {
+public class FragmentParticle extends TextureSheetParticle {
+    private static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
+    private static final InverseFunction FADE_OUT = new InverseFunction(0.8F, 0.8F, false);
     private static final double MAXIMUM_COLLISION_VELOCITY_SQUARED = Mth.square(100.0);
+    private final int startDuration;
+    private final int endDuration;
     private final float rotAngleFrom;
     private final float rotAngleTo;
     private boolean stoppedByCollision;
 
     private FragmentParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, ItemStack stack) {
-        super(level, x, y, z, xd, yd, zd, getRed(stack), getGreen(stack), getBlue(stack), 5, 60);
+        super(level, x, y, z);
         this.lifetime = 80;
+        this.startDuration = 5;
+        this.endDuration = 20;
+        this.gravity = 1.5F;
+        this.friction = 0.95F;
         this.quadSize = 0.2F;
         this.rotAngleFrom = Random.nextFloat(Mth.TWO_PI);
         this.rotAngleTo = getRotAngleTo();
         this.oRoll = this.rotAngleFrom;
         this.roll = this.rotAngleFrom;
+        this.rCol = getRed(stack);
+        this.gCol = getGreen(stack);
+        this.bCol = getBlue(stack);
         this.setSprite(this.getSprites(stack));
+        this.setParticleSpeed(xd, yd, zd);
     }
 
     private static float getRed(ItemStack stack) {
@@ -110,7 +124,7 @@ public class FragmentParticle extends GoreParticle {
                 this.zd = 0.0;
             }
 
-            if (xd != x || yd != y || zd != z) {
+            if (this.onGround) {
                 var end = this.lifetime + 1 - this.endDuration;
                 if (this.age >= end) return;
 

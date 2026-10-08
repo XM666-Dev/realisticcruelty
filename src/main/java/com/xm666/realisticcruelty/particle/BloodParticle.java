@@ -3,10 +3,13 @@ package com.xm666.realisticcruelty.particle;
 import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.math.CollisionHandler;
 import com.xm666.realisticcruelty.math.CollisionResult;
+import com.xm666.realisticcruelty.math.InverseFunction;
 import com.xm666.realisticcruelty.math.Random;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ColorParticleOption;
@@ -16,17 +19,29 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
-public class BloodParticle extends GoreParticle {
+public class BloodParticle extends TextureSheetParticle {
+    private static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
+    private static final InverseFunction FADE_OUT = new InverseFunction(0.2F, 0.2F, false);
     private static final double BUOYANCY = 1.0;
     private static final double FLUID_RESISTANCE = 0.95;
     private static final double MAXIMUM_COLLISION_VELOCITY_SQUARED = Mth.square(100.0);
+    private final int startDuration;
+    private final int endDuration;
     private boolean stoppedByCollision;
 
     private BloodParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, float r, float g, float b, SpriteSet sprites) {
-        super(level, x, y, z, xd, yd, zd, r, g, b, 5, 10);
+        super(level, x, y, z);
         this.lifetime = 60;
+        this.startDuration = 5;
+        this.endDuration = 10;
+        this.gravity = 1.5F;
+        this.friction = 0.95F;
         this.quadSize = 0.1F;
+        this.rCol = r;
+        this.gCol = g;
+        this.bCol = b;
         this.pickSprite(sprites);
+        this.setParticleSpeed(xd, yd, zd);
     }
 
     @Override
@@ -136,6 +151,11 @@ public class BloodParticle extends GoreParticle {
                 (f) -> size[0] *= FADE_OUT.apply(f)
         );
         return size[0];
+    }
+
+    @Override
+    public ParticleRenderType getRenderType() {
+        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     public record Provider(SpriteSet sprites) implements ParticleProvider<ColorParticleOption> {
