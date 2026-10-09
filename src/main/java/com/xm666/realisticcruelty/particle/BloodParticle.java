@@ -3,10 +3,14 @@ package com.xm666.realisticcruelty.particle;
 import com.xm666.realisticcruelty.Config;
 import com.xm666.realisticcruelty.math.CollisionHandler;
 import com.xm666.realisticcruelty.math.CollisionResult;
+import com.xm666.realisticcruelty.math.InverseFunction;
 import com.xm666.realisticcruelty.math.Random;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
+import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -14,20 +18,42 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
-public class BloodParticle extends GoreParticle {
+public class BloodParticle extends TextureSheetParticle {
+    private static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
+    private static final InverseFunction FADE_OUT = new InverseFunction(0.2F, 0.2F, false);
+    private static final double BUOYANCY = 1.0;
+    private static final double FLUID_RESISTANCE = 0.95;
     private static final double MAXIMUM_COLLISION_VELOCITY_SQUARED = Mth.square(100.0);
+    private final int startDuration;
+    private final int endDuration;
     private boolean stoppedByCollision;
+    private boolean inFluidFadeOut;
 
     private BloodParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, float r, float g, float b, SpriteSet sprites) {
-        super(level, x, y, z, xd, yd, zd, r, g, b, 5, 10);
+        super(level, x, y, z);
         this.lifetime = 60;
+        this.startDuration = 5;
+        this.endDuration = 10;
+        this.gravity = 1.5F;
+        this.friction = 0.95F;
         this.quadSize = 0.1F;
+        this.rCol = r;
+        this.gCol = g;
+        this.bCol = b;
         this.pickSprite(sprites);
+        this.setParticleSpeed(xd, yd, zd);
     }
 
     @Override
     public void move(double x, double y, double z) {
         if (!this.stoppedByCollision) {
+            var inFluid = this.isInFluid();
+            if (inFluid) {
+                this.yd += 0.04 * BUOYANCY;
+                this.xd *= FLUID_RESISTANCE;
+                this.yd *= FLUID_RESISTANCE;
+                this.zd *= FLUID_RESISTANCE;
+            }
             var result = (CollisionResult) null;
             var xd = x;
             var yd = y;
@@ -61,11 +87,23 @@ public class BloodParticle extends GoreParticle {
             }
 
             if (result != null && result.collided()) {
-                var end = this.lifetime + 1 - endDuration;
+                var end = this.lifetime + 1 - this.endDuration;
                 if (this.age >= end) return;
 
                 this.age = end;
+                if (inFluid) {
+                    this.inFluidFadeOut = true;
+                    return;
+                }
+
                 this.onCollided(result.normal());
+            }
+            if (inFluid && this.age > 20) {
+                var end = this.lifetime + 1 - this.endDuration;
+                if (this.age >= end) return;
+
+                this.age = end;
+                this.inFluidFadeOut = true;
             }
         }
     }
@@ -96,6 +134,17 @@ public class BloodParticle extends GoreParticle {
         this.level.playLocalSound(this.x, this.y, this.z, sound, SoundSource.BLOCKS, volume, 1.0F, false);
     }
 
+    private boolean isInFluid() {
+        var pos = this.getPos();
+        var blockPos = BlockPos.containing(pos);
+        var fluidState = this.level.getFluidState(blockPos);
+        if (fluidState.isEmpty()) return false;
+
+        var fluidY = blockPos.getY();
+        var fluidHeight = fluidState.getHeight(this.level, blockPos);
+        return fluidY + fluidHeight > this.y;
+    }
+
     @Override
     public float getQuadSize(float partialTick) {
         var tick = this.age + partialTick;
@@ -103,9 +152,22 @@ public class BloodParticle extends GoreParticle {
         ParticleProcess.apply(tick, this.startDuration, this.endDuration, this.lifetime + 1,
                 (f) -> this.alpha = FADE_IN.apply(f),
                 () -> this.alpha = 1.0F,
-                (f) -> size[0] *= FADE_OUT.apply(f)
+                (f) -> {
+                    if (this.inFluidFadeOut) {
+                        this.alpha = FADE_OUT.apply(f);
+                        size[0] *= Mth.lerp(this.alpha, 1.5F, 1.0F);
+                        return;
+                    }
+
+                    size[0] *= FADE_OUT.apply(f);
+                }
         );
         return size[0];
+    }
+
+    @Override
+    public ParticleRenderType getRenderType() {
+        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     public record Provider(SpriteSet sprites) implements ParticleProvider<ColorParticleOption> {
