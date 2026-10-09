@@ -15,7 +15,7 @@ public record TagObject<T>(HashSet<ResourceKey<T>> resourceKeys, HashSet<TagKey<
 
     public void add(String string, ResourceKey<? extends Registry<T>> registry) {
         var isTag = string.charAt(0) == '#';
-        var location = ResourceLocation.parse(isTag ? string.substring(1) : string);
+        var location = new ResourceLocation(isTag ? string.substring(1) : string);
         if (isTag) {
             tagKeys.add(TagKey.create(registry, location));
         } else {
