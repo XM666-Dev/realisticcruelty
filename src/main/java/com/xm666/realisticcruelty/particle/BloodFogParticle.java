@@ -24,9 +24,9 @@ public class BloodFogParticle extends TextureSheetParticle {
     }
 
     private int getSpriteIndex() {
-        if (this.quadSize < 0.4F) {
+        if (this.quadSize <= 0.5F) {
             return Random.nextInt(8, 11);
-        } else if (this.quadSize < 0.6F) {
+        } else if (this.quadSize <= 0.75F) {
             return Random.nextInt(4, 7);
         } else {
             return Random.nextInt(0, 3);
