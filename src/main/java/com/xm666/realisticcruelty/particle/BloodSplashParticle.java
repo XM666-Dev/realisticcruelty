@@ -90,7 +90,7 @@ public class BloodSplashParticle extends TextureSheetParticle {
                 },
                 (f) -> {
                     this.alpha = FADE_OUT.apply(f);
-                    size[0] *= Mth.map(this.alpha, 1.0F, 0.0F, 1.0F, 2.0F);
+                    size[0] *= Mth.lerp(this.alpha, 2.0F, 1.0F);
                 }
         );
         return size[0];

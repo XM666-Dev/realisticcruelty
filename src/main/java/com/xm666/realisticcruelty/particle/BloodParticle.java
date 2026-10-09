@@ -28,6 +28,7 @@ public class BloodParticle extends TextureSheetParticle {
     private final int startDuration;
     private final int endDuration;
     private boolean stoppedByCollision;
+    private boolean inFluidFadeOut;
 
     private BloodParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, float r, float g, float b, SpriteSet sprites) {
         super(level, x, y, z);
@@ -91,7 +92,10 @@ public class BloodParticle extends TextureSheetParticle {
                 if (this.age >= end) return;
 
                 this.age = end;
-                if (inFluid) return;
+                if (inFluid) {
+                    this.inFluidFadeOut = true;
+                    return;
+                }
 
                 this.onCollided(result.normal());
             }
@@ -100,6 +104,7 @@ public class BloodParticle extends TextureSheetParticle {
                 if (this.age >= end) return;
 
                 this.age = end;
+                this.inFluidFadeOut = true;
             }
         }
     }
@@ -148,7 +153,15 @@ public class BloodParticle extends TextureSheetParticle {
         ParticleProcess.apply(tick, this.startDuration, this.endDuration, this.lifetime + 1,
                 (f) -> this.alpha = FADE_IN.apply(f),
                 () -> this.alpha = 1.0F,
-                (f) -> size[0] *= FADE_OUT.apply(f)
+                (f) -> {
+                    if (this.inFluidFadeOut) {
+                        this.alpha = FADE_OUT.apply(f);
+                        size[0] *= Mth.lerp(this.alpha, 1.5F, 1.0F);
+                        return;
+                    }
+
+                    size[0] *= FADE_OUT.apply(f);
+                }
         );
         return size[0];
     }
