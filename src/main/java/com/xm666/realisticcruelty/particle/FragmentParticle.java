@@ -9,7 +9,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -25,7 +24,7 @@ import org.joml.Quaternionf;
 
 import java.util.List;
 
-public class FragmentParticle extends TextureSheetParticle {
+public class FragmentParticle extends ExtendedTextureSheetParticle {
     private static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
     private static final InverseFunction FADE_OUT = new InverseFunction(0.8F, 0.8F, false);
     private static final double MAXIMUM_COLLISION_VELOCITY_SQUARED = Mth.square(100.0);
