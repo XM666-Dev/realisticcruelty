@@ -5,6 +5,7 @@ import com.xm666.realisticcruelty.math.Random;
 import com.xm666.realisticcruelty.network.HitInfo;
 import com.xm666.realisticcruelty.particle.ParticleTypes;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
@@ -15,6 +16,8 @@ import net.minecraft.world.phys.Vec3;
 
 public class ParticleHandler {
     public static void gore(HitInfo hitInfo, float amount, int color, Item item) {
+        var mc = Minecraft.getInstance();
+        var level = mc.level;
         var amountSqrt = Math.sqrt(amount);
         var bloodSpeed = getBloodSpeed(amountSqrt);
         var bloodSpeedMin = getBloodSpeedMin(bloodSpeed, hitInfo);
@@ -26,7 +29,7 @@ public class ParticleHandler {
             var position = bloodTransform.position();
             var speed = Random.nextDouble(bloodSpeedMin, bloodSpeedMax);
             var velocity = bloodTransform.rotation().scale(speed);
-            addParticle(blood, position, velocity);
+            addParticle(level, blood, position, velocity);
             --bloodAmount;
         }
         if (!hitInfo.isBloodFogEnabled() || item != Items.AIR) return;
@@ -34,7 +37,7 @@ public class ParticleHandler {
         var bloodFogPosition = hitInfo.getBloodFogPosition();
         var bloodFogSize = getBloodFogSize(amountSqrt);
         var bloodFog = ColorParticleOption.create(ParticleTypes.BLOOD_FOG.get(), color);
-        addParticle(bloodFog, bloodFogPosition, new Vec3(bloodFogSize, 0.0, 0.0));
+        addParticle(level, bloodFog, bloodFogPosition, new Vec3(bloodFogSize, 0.0, 0.0));
     }
 
     public static ParticleOptions getBlood(int color, Item item) {
@@ -70,11 +73,7 @@ public class ParticleHandler {
         return Math.min(amountSqrt * bloodFogSizeFactor, bloodFogSizeMax);
     }
 
-    public static void addParticle(ParticleOptions particleData, Vec3 position, Vec3 velocity) {
-        var mc = Minecraft.getInstance();
-        var level = mc.level;
-        if (level == null) return;
-
+    public static void addParticle(ClientLevel level, ParticleOptions particleData, Vec3 position, Vec3 velocity) {
         level.addParticle(particleData, position.x, position.y, position.z, velocity.x, velocity.y, velocity.z);
     }
 }

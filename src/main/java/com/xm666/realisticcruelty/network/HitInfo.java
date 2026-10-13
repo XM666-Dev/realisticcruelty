@@ -1,22 +1,26 @@
 package com.xm666.realisticcruelty.network;
 
 import com.xm666.realisticcruelty.Config;
-import com.xm666.realisticcruelty.math.ClipHandler;
-import com.xm666.realisticcruelty.math.Random;
-import com.xm666.realisticcruelty.math.Transform;
-import com.xm666.realisticcruelty.math.VectorMath;
+import com.xm666.realisticcruelty.math.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 
 public abstract class HitInfo {
     public static Vec3 addBloodDepthOffset(Vec3 position, Vec3 direction) {
-        var bloodOffset = Config.BLOOD_DEPTH_OFFSET.get();
-        return position.add(direction.scale(bloodOffset));
+        var bloodDepthOffset = Config.BLOOD_DEPTH_OFFSET.get();
+        var velocity = direction.scale(bloodDepthOffset);
+        var mc = Minecraft.getInstance();
+        var level = mc.level;
+        var result = CollisionHandler.collideBoundingBox(velocity, position, level);
+        var travel = result.travel();
+        return position.add(travel);
     }
 
     public static Vec3 addBloodFogDepthOffset(Vec3 position, Vec3 direction) {
         var bloodFogOffset = Config.BLOOD_FOG_DEPTH_OFFSET.get();
-        return position.add(direction.scale(bloodFogOffset));
+        var offset = direction.scale(bloodFogOffset);
+        return position.add(offset);
     }
 
     public abstract Vec3 getBloodFogPosition();

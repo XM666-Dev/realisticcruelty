@@ -12,44 +12,74 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 public class BloodSplatParticle extends TextureSheetParticle {
     private static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
     private static final InverseFunction FADE_OUT = new InverseFunction(0.2F, 0.6F, false);
-    private final Direction rotation;
     private final int startDuration;
     private final int endDuration;
+    private final Direction direction;
+    private final float pivotX;
+    private final float pivotY;
+    private final BlockPos attachedPos;
+    private final VoxelShape attachedShape;
 
-    private BloodSplatParticle(ClientLevel level, double x, double y, double z, double xd, float r, float g, float b, SpriteSet sprites) {
+    private BloodSplatParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, float r, float g, float b, SpriteSet sprites) {
         super(level, x, y, z);
+        var spriteIndex = Random.nextInt(0, 11);
+        var spriteScale = getSpriteScale(spriteIndex);
         this.lifetime = Config.BLOOD_SPLAT_LIFETIME.get();
         this.startDuration = 10;
         this.endDuration = 40;
         this.quadSize = 0.5F;
-        this.rotation = Direction.values()[(int) xd];
+        this.direction = Direction.values()[(int) xd];
+        this.pivotX = (float) yd * spriteScale;
+        this.pivotY = (float) zd * spriteScale;
+        this.attachedPos = this.getAttachedPos();
+        this.attachedShape = this.getAttachedShape();
         this.roll = Random.nextInt(3) * Mth.HALF_PI;
         this.oRoll = this.roll;
         this.rCol = r;
         this.gCol = g;
         this.bCol = b;
-        this.pickSprite(sprites);
+        this.setSprite(sprites.get(spriteIndex, 11));
+    }
+
+    private BlockPos getAttachedPos() {
+        var velocity = this.getDirectionVector().scale(-0.01);
+        var result = CollisionHandler.collideBoundingBox(velocity, this.getPos(), this.level);
+        return result.blockPos();
+    }
+
+    private VoxelShape getAttachedShape() {
+        var state = this.level.getBlockState(this.attachedPos);
+        return state.getVisualShape(this.level, this.attachedPos, CollisionContext.empty());
+    }
+
+    private float getSpriteScale(int spriteIndex) {
+        if (spriteIndex < 4) {
+            return 1.0F;
+        } else if (spriteIndex < 8) {
+            return 0.75F;
+        } else {
+            return 0.5F;
+        }
     }
 
     @Override
     public void move(double x, double y, double z) {
-        if (this.age % 10 != 0) return;
+        if (this.getAttachedShape() == this.attachedShape) return;
 
-        var velocity = this.getDirectionVector().scale(-0.01);
-        var collisionResult = CollisionHandler.collideBoundingBox(velocity, this.getPos(), this.level);
-        if (!collisionResult.collided()) {
-            this.remove();
-        }
+        this.remove();
     }
 
     @Override
@@ -65,7 +95,7 @@ public class BloodSplatParticle extends TextureSheetParticle {
 
     @Override
     public FacingCameraMode getFacingCameraMode() {
-        return (quaternionf, camera, v) -> quaternionf.set(this.getDirectionQuaternion());
+        return (quaternionf, camera, v) -> quaternionf.set(this.getRotation());
     }
 
     @Override
@@ -81,9 +111,12 @@ public class BloodSplatParticle extends TextureSheetParticle {
         var distance = camera.getPosition().distanceTo(this.getPos());
         var offsetLength = Math.sqrt(distance) * 0.01;
         var offset = this.getDirectionVector().scale(offsetLength);
-        x = (float) (x + offset.x);
-        y = (float) (y + offset.y);
-        z = (float) (z + offset.z);
+        var size = this.getQuadSize(partialTicks);
+        var pivot = new Vector3f(this.pivotX * size, this.pivotY * size, 0.0F);
+        var pivotOffset = pivot.rotate(this.getPivotRotation());
+        x = (float) (x + offset.x + pivotOffset.x);
+        y = (float) (y + offset.y + pivotOffset.y);
+        z = (float) (z + offset.z + pivotOffset.z);
         super.renderRotatedQuad(buffer, quaternion, x, y, z, partialTicks);
     }
 
@@ -108,11 +141,15 @@ public class BloodSplatParticle extends TextureSheetParticle {
     }
 
     private Vec3 getDirectionVector() {
-        return new Vec3(this.rotation.step());
+        return new Vec3(this.direction.step());
     }
 
-    private Quaternionf getDirectionQuaternion() {
-        return new Quaternionf().rotationTo(new Vector3f(0.0F, 0.0F, 1.0F), this.rotation.step());
+    private Quaternionf getRotation() {
+        return this.direction.getRotation().rotateX(-Mth.HALF_PI);
+    }
+
+    private Quaternionf getPivotRotation() {
+        return this.direction.getRotation().rotateX(Mth.HALF_PI);
     }
 
     public record Provider(SpriteSet sprites) implements ParticleProvider<ColorParticleOption> {
@@ -120,7 +157,7 @@ public class BloodSplatParticle extends TextureSheetParticle {
             var r = option.getRed();
             var g = option.getGreen();
             var b = option.getBlue();
-            return new BloodSplatParticle(level, x, y, z, xd, r, g, b, sprites);
+            return new BloodSplatParticle(level, x, y, z, xd, yd, zd, r, g, b, sprites);
         }
     }
 }
