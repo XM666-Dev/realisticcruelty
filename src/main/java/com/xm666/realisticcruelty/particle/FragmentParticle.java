@@ -1,7 +1,7 @@
 package com.xm666.realisticcruelty.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.xm666.realisticcruelty.Config;
+import com.xm666.realisticcruelty.ClientConfig;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import com.xm666.realisticcruelty.math.Random;
 import net.minecraft.client.Camera;
@@ -134,12 +134,13 @@ public class FragmentParticle extends TextureSheetParticle {
         this.zd *= 0.5;
         this.yd = Random.nextDouble(0.1, 0.2);
 
-        var fragmentSound = Config.FRAGMENT_SOUND.get();
+        var fragmentSound = ClientConfig.FRAGMENT_SOUND.get();
         if (fragmentSound.isEmpty()) return;
 
-        var fragmentVolumeMultiplier = Config.FRAGMENT_VOLUME_MULTIPLIER.get().floatValue();
+        var fragmentVolumeMultiplierMin = ClientConfig.FRAGMENT_VOLUME_MULTIPLIER_MIN.get().floatValue();
+        var fragmentVolumeMultiplierMax = ClientConfig.FRAGMENT_VOLUME_MULTIPLIER_MAX.get().floatValue();
         var sound = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse(fragmentSound));
-        var volume = Random.nextFloat(0.3F, 1.0F) * fragmentVolumeMultiplier;
+        var volume = Random.nextFloat(fragmentVolumeMultiplierMin, fragmentVolumeMultiplierMax);
         this.level.playLocalSound(this.x, this.y, this.z, sound, SoundSource.BLOCKS, volume, 1.0F, false);
     }
 

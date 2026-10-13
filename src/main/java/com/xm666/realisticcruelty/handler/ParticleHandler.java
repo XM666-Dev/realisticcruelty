@@ -1,6 +1,6 @@
 package com.xm666.realisticcruelty.handler;
 
-import com.xm666.realisticcruelty.Config;
+import com.xm666.realisticcruelty.ClientConfig;
 import com.xm666.realisticcruelty.math.Random;
 import com.xm666.realisticcruelty.network.HitInfo;
 import com.xm666.realisticcruelty.particle.ParticleTypes;
@@ -47,16 +47,17 @@ public class ParticleHandler {
     }
 
     public static float getBloodAmount(float amount) {
-        var bloodAmountFactor = Config.BLOOD_AMOUNT_FACTOR.get().floatValue();
-        var bloodAmountMax = Config.BLOOD_AMOUNT_MAX.get().floatValue();
-        var bloodAmountAddition = Config.BLOOD_AMOUNT_ADDITION.get().floatValue();
+        var bloodAmountFactor = ClientConfig.BLOOD_AMOUNT_FACTOR.get().floatValue();
+        var bloodAmountAddition = ClientConfig.BLOOD_AMOUNT_ADDITION.get().floatValue();
+        var bloodAmountMax = ClientConfig.BLOOD_AMOUNT_MAX.get().floatValue();
         return Math.min(amount * bloodAmountFactor + bloodAmountAddition, bloodAmountMax);
     }
 
     public static double getBloodSpeed(double amountSqrt) {
-        var bloodSpeedFactor = Config.BLOOD_SPEED_FACTOR.get();
-        var bloodSpeedMax = Config.BLOOD_SPEED_MAX.get();
-        return Math.min(amountSqrt * bloodSpeedFactor, bloodSpeedMax);
+        var bloodSpeedFactor = ClientConfig.BLOOD_SPEED_FACTOR.get();
+        var bloodSpeedAddition = ClientConfig.BLOOD_SPEED_ADDITION.get();
+        var bloodSpeedMax = ClientConfig.BLOOD_SPEED_MAX.get();
+        return Math.min(amountSqrt * bloodSpeedFactor + bloodSpeedAddition, bloodSpeedMax);
     }
 
     public static double getBloodSpeedMin(double bloodSpeed, HitInfo hitInfo) {
@@ -68,9 +69,10 @@ public class ParticleHandler {
     }
 
     public static double getBloodFogSize(double amountSqrt) {
-        var bloodFogSizeFactor = Config.BLOOD_FOG_SIZE_FACTOR.get();
-        var bloodFogSizeMax = Config.BLOOD_FOG_SIZE_MAX.get();
-        return Math.min(amountSqrt * bloodFogSizeFactor, bloodFogSizeMax);
+        var bloodFogSizeFactor = ClientConfig.BLOOD_FOG_SIZE_FACTOR.get();
+        var bloodFogSizeAddition = ClientConfig.BLOOD_FOG_SIZE_ADDITION.get();
+        var bloodFogSizeMax = ClientConfig.BLOOD_FOG_SIZE_MAX.get();
+        return Math.min(amountSqrt * bloodFogSizeFactor + bloodFogSizeAddition, bloodFogSizeMax);
     }
 
     public static void addParticle(ClientLevel level, ParticleOptions particleData, Vec3 position, Vec3 velocity) {

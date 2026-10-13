@@ -1,7 +1,7 @@
 package com.xm666.realisticcruelty.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.xm666.realisticcruelty.Config;
+import com.xm666.realisticcruelty.ClientConfig;
 import com.xm666.realisticcruelty.math.CollisionHandler;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import com.xm666.realisticcruelty.math.Random;
@@ -37,7 +37,7 @@ public class BloodSplatParticle extends TextureSheetParticle {
         super(level, x, y, z);
         var spriteIndex = Random.nextInt(0, 11);
         var spriteScale = getSpriteScale(spriteIndex);
-        this.lifetime = Config.BLOOD_SPLAT_LIFETIME.get();
+        this.lifetime = ClientConfig.BLOOD_SPLAT_LIFETIME.get();
         this.startDuration = 10;
         this.endDuration = 40;
         this.quadSize = 0.5F;

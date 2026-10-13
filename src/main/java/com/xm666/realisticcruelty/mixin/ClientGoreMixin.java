@@ -17,8 +17,8 @@ public class ClientGoreMixin {
     private static class ClientPacketListenerMixin {
         @WrapOperation(method = "handleDamageEvent", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;handleDamageEvent(Lnet/minecraft/world/damagesource/DamageSource;)V"))
         private void onHandleDamageEvent(Entity instance, DamageSource damageSource, Operation<Void> original) {
-            var clientBloodAmountMin = ClientConfig.CLIENT_BLOOD_AMOUNT_MIN.get().floatValue();
-            var clientBloodAmountMax = ClientConfig.CLIENT_BLOOD_AMOUNT_MAX.get().floatValue();
+            var clientBloodAmountMin = ClientConfig.CLIENT_GORE_AMOUNT_MIN.get().floatValue();
+            var clientBloodAmountMax = ClientConfig.CLIENT_GORE_AMOUNT_MAX.get().floatValue();
             var amount = Random.nextFloat(clientBloodAmountMin, clientBloodAmountMax);
             original.call(instance, damageSource);
             GoreHandler.onDamage((LivingEntity) instance, damageSource, amount);

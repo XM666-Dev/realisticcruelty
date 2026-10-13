@@ -1,6 +1,6 @@
 package com.xm666.realisticcruelty.particle;
 
-import com.xm666.realisticcruelty.Config;
+import com.xm666.realisticcruelty.ClientConfig;
 import com.xm666.realisticcruelty.math.CollisionHandler;
 import com.xm666.realisticcruelty.math.CollisionResult;
 import com.xm666.realisticcruelty.math.InverseFunction;
@@ -118,26 +118,27 @@ public class BloodParticle extends TextureSheetParticle {
         var pivotX = (double) pivot.x;
         var pivotY = (double) pivot.y;
 
-        var bloodSplatEnabled = Config.BLOOD_SPLAT_ENABLED.get();
+        var bloodSplatEnabled = ClientConfig.BLOOD_SPLAT_ENABLED.get();
         if (bloodSplatEnabled) {
             var bloodSplat = ColorParticleOption.create(ParticleTypes.BLOOD_SPLAT.get(), this.rCol, this.gCol, this.bCol);
             this.level.addParticle(bloodSplat, this.x, this.y, this.z, normalOrdinal, pivotX, pivotY);
         }
 
-        var bloodSplashCountMin = Config.BLOOD_SPLASH_COUNT_MIN.get();
-        var bloodSplashCountMax = Config.BLOOD_SPLASH_COUNT_MAX.get();
+        var bloodSplashCountMin = ClientConfig.BLOOD_SPLASH_COUNT_MIN.get();
+        var bloodSplashCountMax = ClientConfig.BLOOD_SPLASH_COUNT_MAX.get();
         var bloodSplashCount = Random.nextInt(bloodSplashCountMin, bloodSplashCountMax);
         var bloodSplash = ColorParticleOption.create(ParticleTypes.BLOOD_SPLASH.get(), this.rCol, this.gCol, this.bCol);
         while (bloodSplashCount-- > 0) {
             this.level.addParticle(bloodSplash, this.x, this.y, this.z, normalOrdinal, pivotX, pivotY);
         }
 
-        var bloodSound = Config.BLOOD_SOUND.get();
+        var bloodSound = ClientConfig.BLOOD_SOUND.get();
         if (bloodSound.isEmpty()) return;
 
-        var bloodVolumeMultiplier = Config.BLOOD_VOLUME_MULTIPLIER.get().floatValue();
+        var bloodVolumeMultiplierMin = ClientConfig.BLOOD_VOLUME_MULTIPLIER_MIN.get().floatValue();
+        var bloodVolumeMultiplierMax = ClientConfig.BLOOD_VOLUME_MULTIPLIER_MAX.get().floatValue();
         var sound = BuiltInRegistries.SOUND_EVENT.get(ResourceLocation.parse(bloodSound));
-        var volume = Random.nextFloat(0.3F, 1.0F) * bloodVolumeMultiplier;
+        var volume = Random.nextFloat(bloodVolumeMultiplierMin, bloodVolumeMultiplierMax);
         this.level.playLocalSound(this.x, this.y, this.z, sound, SoundSource.BLOCKS, volume, 1.0F, false);
     }
 
