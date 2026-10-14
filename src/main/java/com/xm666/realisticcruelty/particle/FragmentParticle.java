@@ -171,12 +171,6 @@ public class FragmentParticle extends ExtendedTextureSheetParticle {
         super.renderRotatedQuad(buffer, quaternion, x, y, z, partialTicks);
     }
 
-    @Override
-    public AABB getBoundingBox() {
-        var offset = this.getRenderOffset();
-        return super.getBoundingBox().move(new Vec3(offset));
-    }
-
     private Vector3f getRenderOffset() {
         return new Vector3f(0.0F, 0.2F, 0.0F);
     }
