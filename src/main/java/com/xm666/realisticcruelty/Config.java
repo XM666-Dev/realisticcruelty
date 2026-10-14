@@ -36,101 +36,11 @@ public class Config {
 
     private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 
-    public static final ForgeConfigSpec.DoubleValue BLOOD_AMOUNT_FACTOR = BUILDER
-            .defineInRange("blood_amount_factor", 1.0, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_AMOUNT_MAX = BUILDER
-            .defineInRange("blood_amount_max", 16.0, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_AMOUNT_ADDITION = BUILDER
-            .defineInRange("blood_amount_addition", -0.5, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_SPEED_FACTOR = BUILDER
-            .defineInRange("blood_speed_factor", 0.3, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_SPEED_MAX = BUILDER
-            .defineInRange("blood_speed_max", 1.5, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_GENERAL_SPEED_MIN_MULTIPLIER = BUILDER
-            .defineInRange("blood_general_speed_min_multiplier", 0.2, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_GENERAL_SPEED_MAX_MULTIPLIER = BUILDER
-            .defineInRange("blood_general_speed_max_multiplier", 0.5, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_GENERAL_SPREAD_DEGREES = BUILDER
-            .defineInRange("blood_general_spread_degrees", 90.0, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.BooleanValue BLOOD_GENERAL_FOG_ENABLED = BUILDER
-            .define("blood_general_fog_enabled", true);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_MELEE_SPEED_MIN_MULTIPLIER = BUILDER
-            .defineInRange("blood_melee_speed_min_multiplier", 0.2, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_MELEE_SPEED_MAX_MULTIPLIER = BUILDER
-            .defineInRange("blood_melee_speed_max_multiplier", 0.5, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_MELEE_SPREAD_DEGREES = BUILDER
-            .defineInRange("blood_melee_spread_degrees", 90.0, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.BooleanValue BLOOD_MELEE_FOG_ENABLED = BUILDER
-            .define("blood_melee_fog_enabled", true);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_PROJECTILE_SPEED_MIN_MULTIPLIER = BUILDER
-            .defineInRange("blood_projectile_speed_min_multiplier", 0.5, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_PROJECTILE_SPEED_MAX_MULTIPLIER = BUILDER
-            .defineInRange("blood_projectile_speed_max_multiplier", 1.0, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_PROJECTILE_SPREAD_DEGREES = BUILDER
-            .defineInRange("blood_projectile_spread_degrees", 60.0, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.BooleanValue BLOOD_PROJECTILE_FOG_ENABLED = BUILDER
-            .define("blood_projectile_fog_enabled", true);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_EXPLOSION_SPEED_MIN_MULTIPLIER = BUILDER
-            .defineInRange("blood_explosion_speed_min_multiplier", 0.5, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_EXPLOSION_SPEED_MAX_MULTIPLIER = BUILDER
-            .defineInRange("blood_explosion_speed_max_multiplier", 1.0, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_EXPLOSION_SPREAD_DEGREES = BUILDER
-            .defineInRange("blood_explosion_spread_degrees", 75.0, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.BooleanValue BLOOD_EXPLOSION_FOG_ENABLED = BUILDER
-            .define("blood_explosion_fog_enabled", true);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_DEPTH_OFFSET = BUILDER
-            .defineInRange("blood_depth_offset", 0.125, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_FOG_DEPTH_OFFSET = BUILDER
-            .defineInRange("blood_fog_depth_offset", 0.25, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.BooleanValue BLOOD_SPLAT_ENABLED = BUILDER
-            .define("blood_splat_enabled", true);
-
-    public static final ForgeConfigSpec.IntValue BLOOD_SPLAT_LIFETIME = BUILDER
-            .defineInRange("blood_splat_lifetime", 100, 0, Integer.MAX_VALUE);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_FOG_SIZE_FACTOR = BUILDER
-            .defineInRange("blood_fog_size_factor", 0.2, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_FOG_SIZE_MAX = BUILDER
-            .defineInRange("blood_fog_size_max", 1.0, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.IntValue BLOOD_SPLASH_COUNT_MIN = BUILDER
-            .defineInRange("blood_splash_count_min", 2, 0, Integer.MAX_VALUE);
-
-    public static final ForgeConfigSpec.IntValue BLOOD_SPLASH_COUNT_MAX = BUILDER
-            .defineInRange("blood_splash_count_max", 3, 0, Integer.MAX_VALUE);
-
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> GORE_BLACKLIST = BUILDER
             .defineList("gore_blacklist", List.of(), Config::isValidEntity);
 
     public static final ForgeConfigSpec.BooleanValue GORE_USE_WHITELIST = BUILDER
             .define("gore_use_whitelist", false);
-
-    public static final ForgeConfigSpec.IntValue GORE_COLOR_DEFAULT = BUILDER
-            .defineInRange("gore_color_default", 0x991F1F, 0, Integer.MAX_VALUE);
 
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> GORE_COLORS = BUILDER
             .defineList("gore_colors", List.of(
@@ -142,6 +52,9 @@ public class Config {
                     "glow_squid,0x33ffcc",
                     "wither_skeleton,0x262626"
             ), Config::isValidEntityColor);
+
+    public static final ForgeConfigSpec.IntValue GORE_COLOR_DEFAULT = BUILDER
+            .defineInRange("gore_color_default", 0x991F1F, 0, Integer.MAX_VALUE);
 
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> GORE_TEXTURE_ITEMS = BUILDER
             .defineList("gore_texture_items", List.of(
@@ -159,26 +72,7 @@ public class Config {
 
     public static final ForgeConfigSpec.ConfigValue<List<? extends String>> GORE_GENERAL_DAMAGE_TYPES = BUILDER
             .defineList("gore_general_damage_types", List.of(
-                    "minecraft:cactus",
-                    "minecraft:stalagmite",
-                    "minecraft:falling_stalactite",
-                    "minecraft:falling_block",
-                    "minecraft:falling_anvil",
-                    "minecraft:cramming",
-                    "minecraft:fly_into_wall",
-                    "minecraft:sweet_berry_bush",
-                    "minecraft:fall",
-                    "minecraft:sting",
-                    "minecraft:mob_attack",
-                    "minecraft:player_attack",
-                    "minecraft:mob_attack_no_aggro",
-                    "minecraft:arrow",
-                    "minecraft:thrown",
-                    "minecraft:trident",
-                    "minecraft:mob_projectile",
-                    "minecraft:sonic_boom",
-                    "minecraft:in_wall",
-                    "minecraft:generic",
+                    "#neoforge:is_physical",
                     "#minecraft:is_explosion"
             ), Config::isValidDamageTypeOrTag);
 
@@ -186,18 +80,6 @@ public class Config {
             .defineList("gore_explosion_damage_types", List.of(
                     "#minecraft:is_explosion"
             ), Config::isValidDamageTypeOrTag);
-
-    public static final ForgeConfigSpec.ConfigValue<String> BLOOD_SOUND = BUILDER
-            .define("blood_sound", "block.beehive.drip");
-
-    public static final ForgeConfigSpec.DoubleValue BLOOD_VOLUME_MULTIPLIER = BUILDER
-            .defineInRange("blood_volume_multiplier", 1.0, 0.0, Double.POSITIVE_INFINITY);
-
-    public static final ForgeConfigSpec.ConfigValue<String> FRAGMENT_SOUND = BUILDER
-            .define("fragment_sound", "block.dripstone_block.fall");
-
-    public static final ForgeConfigSpec.DoubleValue FRAGMENT_VOLUME_MULTIPLIER = BUILDER
-            .defineInRange("fragment_volume_multiplier", 1.0, 0.0, Double.POSITIVE_INFINITY);
 
     private static final ForgeConfigSpec SPEC = BUILDER.build();
 

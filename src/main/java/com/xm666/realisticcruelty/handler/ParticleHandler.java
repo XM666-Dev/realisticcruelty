@@ -1,11 +1,12 @@
 package com.xm666.realisticcruelty.handler;
 
-import com.xm666.realisticcruelty.Config;
+import com.xm666.realisticcruelty.ClientConfig;
 import com.xm666.realisticcruelty.math.Random;
 import com.xm666.realisticcruelty.network.HitInfo;
-import com.xm666.realisticcruelty.particle.ColorParticleOption;
 import com.xm666.realisticcruelty.particle.ParticleTypes;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.world.item.Item;
@@ -15,6 +16,8 @@ import net.minecraft.world.phys.Vec3;
 
 public class ParticleHandler {
     public static void gore(HitInfo hitInfo, float amount, int color, Item item) {
+        var mc = Minecraft.getInstance();
+        var level = mc.level;
         var amountSqrt = Math.sqrt(amount);
         var bloodSpeed = getBloodSpeed(amountSqrt);
         var bloodSpeedMin = getBloodSpeedMin(bloodSpeed, hitInfo);
@@ -26,7 +29,7 @@ public class ParticleHandler {
             var position = bloodTransform.position();
             var speed = Random.nextDouble(bloodSpeedMin, bloodSpeedMax);
             var velocity = bloodTransform.rotation().scale(speed);
-            addParticle(blood, position, velocity);
+            addParticle(level, blood, position, velocity);
             --bloodAmount;
         }
         if (!hitInfo.isBloodFogEnabled() || item != Items.AIR) return;
@@ -34,7 +37,7 @@ public class ParticleHandler {
         var bloodFogPosition = hitInfo.getBloodFogPosition();
         var bloodFogSize = getBloodFogSize(amountSqrt);
         var bloodFog = ColorParticleOption.create(ParticleTypes.bloodFog, color);
-        addParticle(bloodFog, bloodFogPosition, new Vec3(bloodFogSize, 0.0, 0.0));
+        addParticle(level, bloodFog, bloodFogPosition, new Vec3(bloodFogSize, 0.0, 0.0));
     }
 
     public static ParticleOptions getBlood(int color, Item item) {
@@ -44,16 +47,17 @@ public class ParticleHandler {
     }
 
     public static float getBloodAmount(float amount) {
-        var bloodAmountFactor = Config.BLOOD_AMOUNT_FACTOR.get().floatValue();
-        var bloodAmountMax = Config.BLOOD_AMOUNT_MAX.get().floatValue();
-        var bloodAmountAddition = Config.BLOOD_AMOUNT_ADDITION.get().floatValue();
+        var bloodAmountFactor = ClientConfig.BLOOD_AMOUNT_FACTOR.get().floatValue();
+        var bloodAmountAddition = ClientConfig.BLOOD_AMOUNT_ADDITION.get().floatValue();
+        var bloodAmountMax = ClientConfig.BLOOD_AMOUNT_MAX.get().floatValue();
         return Math.min(amount * bloodAmountFactor + bloodAmountAddition, bloodAmountMax);
     }
 
     public static double getBloodSpeed(double amountSqrt) {
-        var bloodSpeedFactor = Config.BLOOD_SPEED_FACTOR.get();
-        var bloodSpeedMax = Config.BLOOD_SPEED_MAX.get();
-        return Math.min(amountSqrt * bloodSpeedFactor, bloodSpeedMax);
+        var bloodSpeedFactor = ClientConfig.BLOOD_SPEED_FACTOR.get();
+        var bloodSpeedAddition = ClientConfig.BLOOD_SPEED_ADDITION.get();
+        var bloodSpeedMax = ClientConfig.BLOOD_SPEED_MAX.get();
+        return Math.min(amountSqrt * bloodSpeedFactor + bloodSpeedAddition, bloodSpeedMax);
     }
 
     public static double getBloodSpeedMin(double bloodSpeed, HitInfo hitInfo) {
@@ -65,16 +69,13 @@ public class ParticleHandler {
     }
 
     public static double getBloodFogSize(double amountSqrt) {
-        var bloodFogSizeFactor = Config.BLOOD_FOG_SIZE_FACTOR.get();
-        var bloodFogSizeMax = Config.BLOOD_FOG_SIZE_MAX.get();
-        return Math.min(amountSqrt * bloodFogSizeFactor, bloodFogSizeMax);
+        var bloodFogSizeFactor = ClientConfig.BLOOD_FOG_SIZE_FACTOR.get();
+        var bloodFogSizeAddition = ClientConfig.BLOOD_FOG_SIZE_ADDITION.get();
+        var bloodFogSizeMax = ClientConfig.BLOOD_FOG_SIZE_MAX.get();
+        return Math.min(amountSqrt * bloodFogSizeFactor + bloodFogSizeAddition, bloodFogSizeMax);
     }
 
-    public static void addParticle(ParticleOptions particleData, Vec3 position, Vec3 velocity) {
-        var mc = Minecraft.getInstance();
-        var level = mc.level;
-        if (level == null) return;
-
+    public static void addParticle(ClientLevel level, ParticleOptions particleData, Vec3 position, Vec3 velocity) {
         level.addParticle(particleData, position.x, position.y, position.z, velocity.x, velocity.y, velocity.z);
     }
 }

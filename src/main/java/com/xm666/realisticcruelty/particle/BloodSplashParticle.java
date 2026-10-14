@@ -8,8 +8,11 @@ import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
+import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
+import org.joml.Vector3f;
 
 public class BloodSplashParticle extends TextureSheetParticle {
     private static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
@@ -19,8 +22,9 @@ public class BloodSplashParticle extends TextureSheetParticle {
     private final int endDuration;
     private boolean stoppedByCollision;
 
-    private BloodSplashParticle(ClientLevel level, double x, double y, double z, float r, float g, float b, SpriteSet sprites) {
+    private BloodSplashParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, float r, float g, float b, SpriteSet sprites) {
         super(level, x, y, z);
+        var velocity = this.getVelocity(xd, yd, zd);
         this.lifetime = 30;
         this.startDuration = 5;
         this.endDuration = 10;
@@ -30,18 +34,22 @@ public class BloodSplashParticle extends TextureSheetParticle {
         this.gCol = g;
         this.bCol = b;
         this.pickSprite(sprites);
-        this.setParticleSpeed(Random.nextDouble(-0.15, 0.15), Random.nextDouble(0.15, 0.25), Random.nextDouble(-0.15, 0.15));
+        this.setParticleSpeed(velocity.x, velocity.y, velocity.z);
     }
 
-    @Override
-    public void tick() {
-        super.tick();
-        if (this.onGround) {
-            var end = this.lifetime + 1 - this.endDuration;
-            if (this.age < end) {
-                this.age = end;
-            }
-        }
+    private Vec3 getVelocity(double normalOrdinal, double pivotX, double pivotY) {
+        var radiusX = 0.15F;
+        var radiusMinY = 0.15;
+        var radiusMaxY = 0.25;
+        var x = Random.nextFloat(-radiusX, radiusX);
+        var y = Random.nextDouble(radiusMinY, radiusMaxY);
+        var z = Random.nextFloat(-radiusX, radiusX);
+        var direction = Direction.values()[(int) normalOrdinal];
+        var directionVector = new Vec3(direction.step());
+        var verticalVelocity = directionVector.scale(y);
+        var remainderVelocity = new Vector3f(x + (float) pivotX * radiusX, z + (float) pivotY * radiusX, 0.0F);
+        var horizontalVelocity = new Vec3(remainderVelocity.rotate(direction.getRotation().rotateX(Mth.HALF_PI)));
+        return verticalVelocity.add(horizontalVelocity);
     }
 
     @Override
@@ -53,10 +61,10 @@ public class BloodSplashParticle extends TextureSheetParticle {
             if (this.hasPhysics
                     && (x != 0.0 || y != 0.0 || z != 0.0)
                     && x * x + y * y + z * z < MAXIMUM_COLLISION_VELOCITY_SQUARED) {
-                var remainder = CollisionHandler.collideBoundingBox(new Vec3(x, y, z), this.getPos(), this.level).remainder();
-                x = remainder.x;
-                y = remainder.y;
-                z = remainder.z;
+                var travel = CollisionHandler.collideBoundingBox(new Vec3(x, y, z), this.getPos(), this.level).travel();
+                x = travel.x;
+                y = travel.y;
+                z = travel.z;
             }
 
             if (x != 0.0 || y != 0.0 || z != 0.0) {
@@ -76,6 +84,13 @@ public class BloodSplashParticle extends TextureSheetParticle {
             if (zd != z) {
                 this.zd = 0.0;
             }
+
+            if (!this.onGround) return;
+
+            var end = this.lifetime + 1 - this.endDuration;
+            if (this.age >= end) return;
+
+            this.age = end;
         }
     }
 
@@ -105,7 +120,7 @@ public class BloodSplashParticle extends TextureSheetParticle {
             var r = option.getRed();
             var g = option.getGreen();
             var b = option.getBlue();
-            return new BloodSplashParticle(level, x, y, z, r, g, b, sprites);
+            return new BloodSplashParticle(level, x, y, z, xd, yd, zd, r, g, b, sprites);
         }
     }
 }

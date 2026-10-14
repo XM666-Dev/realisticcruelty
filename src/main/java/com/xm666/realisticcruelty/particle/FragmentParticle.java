@@ -1,14 +1,16 @@
 package com.xm666.realisticcruelty.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.xm666.realisticcruelty.Config;
+import com.xm666.realisticcruelty.ClientConfig;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import com.xm666.realisticcruelty.math.Random;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -19,14 +21,14 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.Quaternionf;
 
 import java.util.List;
 
 public class FragmentParticle extends ExtendedTextureSheetParticle {
     private static final InverseFunction FADE_IN = new InverseFunction(0.2F, 0.8F, true);
-    private static final InverseFunction FADE_OUT = new InverseFunction(0.8F, 0.8F, false);
+    private static final InverseFunction FADE_OUT = new InverseFunction(0.7F, 0.7F, false);
     private static final double MAXIMUM_COLLISION_VELOCITY_SQUARED = Mth.square(100.0);
     private final int startDuration;
     private final int endDuration;
@@ -36,14 +38,14 @@ public class FragmentParticle extends ExtendedTextureSheetParticle {
 
     private FragmentParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, ItemStack stack) {
         super(level, x, y, z);
-        this.lifetime = 80;
+        this.lifetime = 60;
         this.startDuration = 5;
         this.endDuration = 20;
         this.gravity = 1.5F;
         this.friction = 0.95F;
         this.quadSize = 0.2F;
         this.rotAngleFrom = Random.nextFloat(Mth.TWO_PI);
-        this.rotAngleTo = getRotAngleTo();
+        this.rotAngleTo = this.getRotAngleTo();
         this.oRoll = this.rotAngleFrom;
         this.roll = this.rotAngleFrom;
         this.rCol = getRed(stack);
@@ -79,17 +81,6 @@ public class FragmentParticle extends ExtendedTextureSheetParticle {
     }
 
     @Override
-    public void tick() {
-        super.tick();
-        this.oRoll = this.roll;
-        var end = this.lifetime + 1 - this.endDuration;
-        if (this.age >= end) return;
-
-        var delta = FADE_IN.apply((float) this.age / end);
-        this.roll = Mth.rotLerp(delta, this.rotAngleFrom, this.rotAngleTo);
-    }
-
-    @Override
     public void move(double x, double y, double z) {
         if (!this.stoppedByCollision) {
             var xd = x;
@@ -98,10 +89,10 @@ public class FragmentParticle extends ExtendedTextureSheetParticle {
             if (this.hasPhysics
                     && (x != 0.0 || y != 0.0 || z != 0.0)
                     && x * x + y * y + z * z < MAXIMUM_COLLISION_VELOCITY_SQUARED) {
-                var remainder = Entity.collideBoundingBox(null, new Vec3(x, y, z), this.getBoundingBox(), this.level, List.of());
-                x = remainder.x;
-                y = remainder.y;
-                z = remainder.z;
+                var travel = Entity.collideBoundingBox(null, new Vec3(x, y, z), this.getBoundingBox(), this.level, List.of());
+                x = travel.x;
+                y = travel.y;
+                z = travel.z;
             }
 
             if (x != 0.0 || y != 0.0 || z != 0.0) {
@@ -122,25 +113,34 @@ public class FragmentParticle extends ExtendedTextureSheetParticle {
                 this.zd = 0.0;
             }
 
-            if (this.onGround) {
-                var end = this.lifetime + 1 - this.endDuration;
-                if (this.age >= end) return;
+            this.oRoll = this.roll;
 
+            var end = this.lifetime + 1 - this.endDuration;
+            if (this.age >= end) return;
+
+            if (this.onGround) {
                 this.age = end;
                 this.onCollided();
+                return;
             }
+
+            var delta = FADE_IN.apply((float) this.age / end);
+            this.roll = Mth.rotLerp(delta, this.rotAngleFrom, this.rotAngleTo);
         }
     }
 
     protected void onCollided() {
+        this.xd *= 0.5;
+        this.zd *= 0.5;
         this.yd = Random.nextDouble(0.1, 0.2);
 
-        var fragmentSound = Config.FRAGMENT_SOUND.get();
+        var fragmentSound = ClientConfig.FRAGMENT_SOUND.get();
         if (fragmentSound.isEmpty()) return;
 
-        var fragmentVolumeMultiplier = Config.FRAGMENT_VOLUME_MULTIPLIER.get().floatValue();
+        var fragmentVolumeMultiplierMin = ClientConfig.FRAGMENT_VOLUME_MULTIPLIER_MIN.get().floatValue();
+        var fragmentVolumeMultiplierMax = ClientConfig.FRAGMENT_VOLUME_MULTIPLIER_MAX.get().floatValue();
         var sound = BuiltInRegistries.SOUND_EVENT.get(new ResourceLocation(fragmentSound));
-        var volume = Random.nextFloat(0.3F, 1.0F) * fragmentVolumeMultiplier;
+        var volume = Random.nextFloat(fragmentVolumeMultiplierMin, fragmentVolumeMultiplierMax);
         this.level.playLocalSound(this.x, this.y, this.z, sound, SoundSource.BLOCKS, volume, 1.0F, false);
     }
 

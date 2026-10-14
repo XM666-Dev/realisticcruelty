@@ -1,6 +1,6 @@
 package com.xm666.realisticcruelty.particle;
 
-import com.xm666.realisticcruelty.Config;
+import com.xm666.realisticcruelty.ClientConfig;
 import com.xm666.realisticcruelty.math.CollisionHandler;
 import com.xm666.realisticcruelty.math.CollisionResult;
 import com.xm666.realisticcruelty.math.InverseFunction;
@@ -11,7 +11,7 @@ import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
@@ -62,10 +62,10 @@ public class BloodParticle extends TextureSheetParticle {
                     && (x != 0.0 || y != 0.0 || z != 0.0)
                     && x * x + y * y + z * z < MAXIMUM_COLLISION_VELOCITY_SQUARED) {
                 result = CollisionHandler.collideBoundingBox(new Vec3(x, y, z), this.getPos(), this.level);
-                var remainder = result.remainder();
-                x = remainder.x;
-                y = remainder.y;
-                z = remainder.z;
+                var travel = result.travel();
+                x = travel.x;
+                y = travel.y;
+                z = travel.z;
             }
 
             if (x != 0.0 || y != 0.0 || z != 0.0) {
@@ -86,51 +86,59 @@ public class BloodParticle extends TextureSheetParticle {
                 this.zd = 0.0;
             }
 
-            if (result != null && result.collided()) {
-                var end = this.lifetime + 1 - this.endDuration;
-                if (this.age >= end) return;
+            var end = this.lifetime + 1 - this.endDuration;
+            if (this.age >= end) return;
 
+            if (result != null && result.collided()) {
                 this.age = end;
                 if (inFluid) {
                     this.inFluidFadeOut = true;
                     return;
                 }
 
-                this.onCollided(result.normal());
+                this.onCollided(result);
             }
             if (inFluid && this.age > 20) {
-                var end = this.lifetime + 1 - this.endDuration;
-                if (this.age >= end) return;
-
                 this.age = end;
                 this.inFluidFadeOut = true;
             }
         }
     }
 
-    protected void onCollided(Direction normal) {
+    protected void onCollided(CollisionResult result) {
         this.stoppedByCollision = true;
 
-        var bloodSplatEnabled = Config.BLOOD_SPLAT_ENABLED.get();
+        var normal = result.normal();
+        var normalOrdinal = (double) normal.ordinal();
+        var normalVector = normal.step();
+        var direction = result.travel().toVector3f().normalize();
+        var length = direction.dot(normalVector);
+        var remainder = direction.sub(normalVector.mul(length));
+        var pivot = remainder.rotate(normal.getRotation().rotateX(Mth.HALF_PI).conjugate());
+        var pivotX = (double) pivot.x;
+        var pivotY = (double) pivot.y;
+
+        var bloodSplatEnabled = ClientConfig.BLOOD_SPLAT_ENABLED.get();
         if (bloodSplatEnabled) {
             var bloodSplat = ColorParticleOption.create(ParticleTypes.bloodSplat, this.rCol, this.gCol, this.bCol);
-            this.level.addParticle(bloodSplat, this.x, this.y, this.z, normal.ordinal(), 0.0D, 0.0D);
+            this.level.addParticle(bloodSplat, this.x, this.y, this.z, normalOrdinal, pivotX, pivotY);
         }
 
-        var bloodSplashCountMin = Config.BLOOD_SPLASH_COUNT_MIN.get();
-        var bloodSplashCountMax = Config.BLOOD_SPLASH_COUNT_MAX.get();
+        var bloodSplashCountMin = ClientConfig.BLOOD_SPLASH_COUNT_MIN.get();
+        var bloodSplashCountMax = ClientConfig.BLOOD_SPLASH_COUNT_MAX.get();
         var bloodSplashCount = Random.nextInt(bloodSplashCountMin, bloodSplashCountMax);
         var bloodSplash = ColorParticleOption.create(ParticleTypes.bloodSplash, this.rCol, this.gCol, this.bCol);
         while (bloodSplashCount-- > 0) {
-            this.level.addParticle(bloodSplash, this.x, this.y, this.z, 0.0D, 0.0D, 0.0D);
+            this.level.addParticle(bloodSplash, this.x, this.y, this.z, normalOrdinal, pivotX, pivotY);
         }
 
-        var bloodSound = Config.BLOOD_SOUND.get();
+        var bloodSound = ClientConfig.BLOOD_SOUND.get();
         if (bloodSound.isEmpty()) return;
 
-        var bloodVolumeMultiplier = Config.BLOOD_VOLUME_MULTIPLIER.get().floatValue();
+        var bloodVolumeMultiplierMin = ClientConfig.BLOOD_VOLUME_MULTIPLIER_MIN.get().floatValue();
+        var bloodVolumeMultiplierMax = ClientConfig.BLOOD_VOLUME_MULTIPLIER_MAX.get().floatValue();
         var sound = BuiltInRegistries.SOUND_EVENT.get(new ResourceLocation(bloodSound));
-        var volume = Random.nextFloat(0.3F, 1.0F) * bloodVolumeMultiplier;
+        var volume = Random.nextFloat(bloodVolumeMultiplierMin, bloodVolumeMultiplierMax);
         this.level.playLocalSound(this.x, this.y, this.z, sound, SoundSource.BLOCKS, volume, 1.0F, false);
     }
 
