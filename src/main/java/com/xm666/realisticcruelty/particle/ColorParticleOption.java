@@ -1,16 +1,19 @@
 package com.xm666.realisticcruelty.particle;
 
 import com.mojang.brigadier.StringReader;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.serialization.Codec;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleType;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.util.FastColor;
 
 public class ColorParticleOption implements ParticleOptions {
     public static final ParticleOptions.Deserializer<ColorParticleOption> DESERIALIZER = new ParticleOptions.Deserializer<>() {
-        public ColorParticleOption fromCommand(ParticleType<ColorParticleOption> particleType, StringReader stringReader) {
-            return new ColorParticleOption(particleType, 0);
+        public ColorParticleOption fromCommand(ParticleType<ColorParticleOption> particleType, StringReader stringReader) throws CommandSyntaxException {
+            stringReader.expect(' ');
+            return new ColorParticleOption(particleType, stringReader.readInt());
         }
 
         public ColorParticleOption fromNetwork(ParticleType<ColorParticleOption> particleType, FriendlyByteBuf friendlyByteBuf) {
@@ -49,7 +52,7 @@ public class ColorParticleOption implements ParticleOptions {
 
     @Override
     public String writeToString() {
-        return "";
+        return BuiltInRegistries.PARTICLE_TYPE.getKey(this.getType()) + " " + this.color;
     }
 
     public float getRed() {

@@ -4,7 +4,6 @@ import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.CollisionContext;
 
 public class CollisionHandler {
     public static CollisionResult collideBoundingBox(Vec3 velocity, Vec3 from, Level level) {
