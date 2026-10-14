@@ -46,10 +46,6 @@ public class VectorMath {
         return direction.subtract(normal.scale(direction.dot(normal) * 2.0));
     }
 
-    public static Vec3 abs(Vec3 vector) {
-        return new Vec3(Math.abs(vector.x), Math.abs(vector.y), Math.abs(vector.z));
-    }
-
     public static Vec3 getMinPosition(AABB aabb) {
         return new Vec3(aabb.minX, aabb.minY, aabb.minZ);
     }
