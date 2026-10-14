@@ -4,13 +4,11 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.xm666.realisticcruelty.ClientConfig;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import com.xm666.realisticcruelty.math.Random;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -22,7 +20,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.client.model.data.ModelData;
+import net.minecraftforge.client.model.data.ModelData;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
@@ -174,9 +172,9 @@ public class FragmentParticle extends ExtendedTextureSheetParticle {
     }
 
     @Override
-    public AABB getRenderBoundingBox(float partialTicks) {
+    public AABB getBoundingBox() {
         var offset = this.getRenderOffset();
-        return super.getRenderBoundingBox(partialTicks).move(offset);
+        return super.getBoundingBox().move(new Vec3(offset));
     }
 
     private Vector3f getRenderOffset() {

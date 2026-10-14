@@ -5,16 +5,13 @@ import com.xm666.realisticcruelty.ClientConfig;
 import com.xm666.realisticcruelty.math.CollisionHandler;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import com.xm666.realisticcruelty.math.Random;
-import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -114,9 +111,11 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
     }
 
     @Override
-    public AABB getRenderBoundingBox(float partialTicks) {
+    public AABB getBoundingBox() {
+        var mc = Minecraft.getInstance();
+        var partialTicks = mc.getPartialTick();
         var offset = this.getRenderOffset(partialTicks);
-        return super.getRenderBoundingBox(partialTicks).move(offset);
+        return super.getBoundingBox().move(new Vec3(offset));
     }
 
     private Vector3f getRenderOffset(float partialTick) {
