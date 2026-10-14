@@ -16,6 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -105,18 +106,10 @@ public class BloodSplatParticle extends TextureSheetParticle {
 
     @Override
     protected void renderRotatedQuad(VertexConsumer buffer, Quaternionf quaternion, float x, float y, float z, float partialTicks) {
-        var mc = Minecraft.getInstance();
-        var gameRenderer = mc.gameRenderer;
-        var camera = gameRenderer.getMainCamera();
-        var distance = camera.getPosition().distanceTo(this.getPos());
-        var offsetLength = Math.sqrt(distance) * 0.01;
-        var offset = this.getDirectionVector().scale(offsetLength);
-        var size = this.getQuadSize(partialTicks);
-        var pivot = new Vector3f(this.pivotX * size, this.pivotY * size, 0.0F);
-        var pivotOffset = pivot.rotate(this.getPivotRotation());
-        x = (float) (x + offset.x + pivotOffset.x);
-        y = (float) (y + offset.y + pivotOffset.y);
-        z = (float) (z + offset.z + pivotOffset.z);
+        var offset = this.getRenderOffset(partialTicks);
+        x += offset.x;
+        y += offset.y;
+        z += offset.z;
         super.renderRotatedQuad(buffer, quaternion, x, y, z, partialTicks);
     }
 
@@ -138,6 +131,25 @@ public class BloodSplatParticle extends TextureSheetParticle {
         var f1 = (float) (Mth.lerp(partialTicks, this.yo, this.y) - vec3.y());
         var f2 = (float) (Mth.lerp(partialTicks, this.zo, this.z) - vec3.z());
         this.renderRotatedQuad(buffer, quaternion, f, f1, f2, partialTicks);
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(float partialTicks) {
+        var offset = this.getRenderOffset(partialTicks);
+        return super.getRenderBoundingBox(partialTicks).move(offset);
+    }
+
+    private Vector3f getRenderOffset(float partialTick) {
+        var mc = Minecraft.getInstance();
+        var gameRenderer = mc.gameRenderer;
+        var camera = gameRenderer.getMainCamera();
+        var distance = camera.getPosition().distanceTo(this.getPos());
+        var offsetLength = Math.sqrt(distance) * 0.01;
+        var offset = this.getDirectionVector().scale(offsetLength);
+        var size = this.getQuadSize(partialTick);
+        var pivot = new Vector3f(this.pivotX * size, this.pivotY * size, 0.0F);
+        var pivotOffset = pivot.rotate(this.getPivotRotation());
+        return offset.toVector3f().add(pivotOffset);
     }
 
     private Vec3 getDirectionVector() {
