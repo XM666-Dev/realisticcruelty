@@ -13,6 +13,7 @@ import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -107,6 +108,11 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
         y += offset.y;
         z += offset.z;
         super.renderRotatedQuad(buffer, quaternion, x, y, z, partialTicks);
+    }
+
+    @Override
+    public AABB getBoundingBox() {
+        return super.getBoundingBox().inflate(1.0);
     }
 
     private Vector3f getRenderOffset(float partialTick) {
