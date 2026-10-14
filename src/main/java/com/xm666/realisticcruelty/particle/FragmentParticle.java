@@ -20,7 +20,6 @@ import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.Quaternionf;
@@ -191,12 +190,6 @@ public class FragmentParticle extends TextureSheetParticle {
         var f1 = (float) (Mth.lerp(partialTicks, this.yo, this.y) - vec3.y());
         var f2 = (float) (Mth.lerp(partialTicks, this.zo, this.z) - vec3.z());
         this.renderRotatedQuad(buffer, quaternion, f, f1, f2, partialTicks);
-    }
-
-    @Override
-    public AABB getRenderBoundingBox(float partialTicks) {
-        var offset = this.getRenderOffset();
-        return super.getRenderBoundingBox(partialTicks).move(offset);
     }
 
     private Vector3f getRenderOffset() {

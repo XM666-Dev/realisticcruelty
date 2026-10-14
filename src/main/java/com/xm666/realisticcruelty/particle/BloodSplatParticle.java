@@ -16,7 +16,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.util.Mth;
-import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -131,12 +130,6 @@ public class BloodSplatParticle extends TextureSheetParticle {
         var f1 = (float) (Mth.lerp(partialTicks, this.yo, this.y) - vec3.y());
         var f2 = (float) (Mth.lerp(partialTicks, this.zo, this.z) - vec3.z());
         this.renderRotatedQuad(buffer, quaternion, f, f1, f2, partialTicks);
-    }
-
-    @Override
-    public AABB getRenderBoundingBox(float partialTicks) {
-        var offset = this.getRenderOffset(partialTicks);
-        return super.getRenderBoundingBox(partialTicks).move(offset);
     }
 
     private Vector3f getRenderOffset(float partialTick) {
