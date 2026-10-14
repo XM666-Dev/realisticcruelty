@@ -40,7 +40,7 @@ public class ClientGoreMixin {
         }
 
         @ModifyExpressionValue(method = "makeParticle", at = @At(value = "INVOKE", target = "Ljava/util/Map;get(Ljava/lang/Object;)Ljava/lang/Object;"))
-        private <T extends ParticleOptions> Object get(Object original, T particleOptions) {
+        private <T extends ParticleOptions> Object modifyProvider(Object original, T particleOptions) {
             if (original != null) return original;
 
             return ClientGoreHandler.getProvider(particleOptions.getType());
