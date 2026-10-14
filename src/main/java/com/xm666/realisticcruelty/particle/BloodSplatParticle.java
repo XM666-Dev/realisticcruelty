@@ -122,7 +122,7 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
     }
 
     private Quaternionf getRotation() {
-        return this.direction.getRotation().rotateX(-Mth.HALF_PI);
+        return this.direction.getRotation().rotateX(Mth.HALF_PI);
     }
 
     private Quaternionf getPivotRotation() {
