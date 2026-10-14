@@ -4,11 +4,13 @@ import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.xm666.realisticcruelty.ClientConfig;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import com.xm666.realisticcruelty.math.Random;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.particles.ItemParticleOption;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -18,9 +20,11 @@ import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.client.model.data.ModelData;
+import net.neoforged.neoforge.client.model.data.ModelData;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.List;
 
@@ -162,8 +166,21 @@ public class FragmentParticle extends ExtendedTextureSheetParticle {
 
     @Override
     protected void renderRotatedQuad(VertexConsumer buffer, Quaternionf quaternion, float x, float y, float z, float partialTicks) {
-        y += 0.2F;
+        var offset = this.getRenderOffset();
+        x += offset.x;
+        y += offset.y;
+        z += offset.z;
         super.renderRotatedQuad(buffer, quaternion, x, y, z, partialTicks);
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(float partialTicks) {
+        var offset = this.getRenderOffset();
+        return super.getRenderBoundingBox(partialTicks).move(offset);
+    }
+
+    private Vector3f getRenderOffset() {
+        return new Vector3f(0.0F, 0.2F, 0.0F);
     }
 
     public record Provider(SpriteSet sprites) implements ParticleProvider<ItemParticleOption> {

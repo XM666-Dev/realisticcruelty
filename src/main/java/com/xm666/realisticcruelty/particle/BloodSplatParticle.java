@@ -5,14 +5,18 @@ import com.xm666.realisticcruelty.ClientConfig;
 import com.xm666.realisticcruelty.math.CollisionHandler;
 import com.xm666.realisticcruelty.math.InverseFunction;
 import com.xm666.realisticcruelty.math.Random;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.ParticleProvider;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.core.particles.ColorParticleOption;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -102,19 +106,30 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
 
     @Override
     protected void renderRotatedQuad(VertexConsumer buffer, Quaternionf quaternion, float x, float y, float z, float partialTicks) {
+        var offset = this.getRenderOffset(partialTicks);
+        x += offset.x;
+        y += offset.y;
+        z += offset.z;
+        super.renderRotatedQuad(buffer, quaternion, x, y, z, partialTicks);
+    }
+
+    @Override
+    public AABB getRenderBoundingBox(float partialTicks) {
+        var offset = this.getRenderOffset(partialTicks);
+        return super.getRenderBoundingBox(partialTicks).move(offset);
+    }
+
+    private Vector3f getRenderOffset(float partialTick) {
         var mc = Minecraft.getInstance();
         var gameRenderer = mc.gameRenderer;
         var camera = gameRenderer.getMainCamera();
         var distance = camera.getPosition().distanceTo(this.getPos());
         var offsetLength = Math.sqrt(distance) * 0.01;
         var offset = this.getDirectionVector().scale(offsetLength);
-        var size = this.getQuadSize(partialTicks);
+        var size = this.getQuadSize(partialTick);
         var pivot = new Vector3f(this.pivotX * size, this.pivotY * size, 0.0F);
         var pivotOffset = pivot.rotate(this.getPivotRotation());
-        x = (float) (x + offset.x + pivotOffset.x);
-        y = (float) (y + offset.y + pivotOffset.y);
-        z = (float) (z + offset.z + pivotOffset.z);
-        super.renderRotatedQuad(buffer, quaternion, x, y, z, partialTicks);
+        return offset.toVector3f().add(pivotOffset);
     }
 
     private Vec3 getDirectionVector() {
