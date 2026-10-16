@@ -38,18 +38,18 @@ public class BloodSplashParticle extends TextureSheetParticle {
     }
 
     private Vec3 getVelocity(double normalOrdinal, double pivotX, double pivotY) {
-        var radiusX = 0.15F;
+        var radiusHorizontal = 0.15F;
         var radiusMinY = 0.15;
         var radiusMaxY = 0.25;
-        var x = Random.nextFloat(-radiusX, radiusX);
+        var x = Random.nextFloat(-radiusHorizontal, radiusHorizontal);
+        var z = Random.nextFloat(-radiusHorizontal, radiusHorizontal);
         var y = Random.nextDouble(radiusMinY, radiusMaxY);
-        var z = Random.nextFloat(-radiusX, radiusX);
         var direction = Direction.values()[(int) normalOrdinal];
         var directionVector = new Vec3(direction.step());
+        var componentVelocity = new Vector3f(x + (float) pivotX * radiusHorizontal, z + (float) pivotY * radiusHorizontal, 0.0F);
+        var horizontalVelocity = new Vec3(componentVelocity.rotate(direction.getRotation().rotateX(Mth.HALF_PI)));
         var verticalVelocity = directionVector.scale(y);
-        var remainderVelocity = new Vector3f(x + (float) pivotX * radiusX, z + (float) pivotY * radiusX, 0.0F);
-        var horizontalVelocity = new Vec3(remainderVelocity.rotate(direction.getRotation().rotateX(Mth.HALF_PI)));
-        return verticalVelocity.add(horizontalVelocity);
+        return horizontalVelocity.add(verticalVelocity);
     }
 
     @Override
