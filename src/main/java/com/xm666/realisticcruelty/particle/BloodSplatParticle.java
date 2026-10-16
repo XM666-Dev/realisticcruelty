@@ -34,7 +34,7 @@ public class BloodSplatParticle extends ExtendedTextureSheetParticle {
     private BloodSplatParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, float r, float g, float b, SpriteSet sprites) {
         super(level, x, y, z);
         var spriteIndex = Random.nextInt(0, 11);
-        var spriteScale = getSpriteScale(spriteIndex);
+        var spriteScale = this.getSpriteScale(spriteIndex);
         this.lifetime = ClientConfig.BLOOD_SPLAT_LIFETIME.get();
         this.startDuration = 10;
         this.endDuration = 40;

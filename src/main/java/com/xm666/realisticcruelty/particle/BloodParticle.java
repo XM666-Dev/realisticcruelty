@@ -112,8 +112,8 @@ public class BloodParticle extends TextureSheetParticle {
         var normalVector = normal.step();
         var direction = result.travel().toVector3f().normalize();
         var length = direction.dot(normalVector);
-        var remainder = direction.sub(normalVector.mul(length));
-        var pivot = remainder.rotate(normal.getRotation().rotateX(Mth.HALF_PI).conjugate());
+        var component = direction.sub(normalVector.mul(length));
+        var pivot = component.rotate(normal.getRotation().rotateX(Mth.HALF_PI).conjugate());
         var pivotX = (double) pivot.x;
         var pivotY = (double) pivot.y;
 
