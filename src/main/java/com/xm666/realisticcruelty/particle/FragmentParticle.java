@@ -35,7 +35,7 @@ public class FragmentParticle extends ExtendedTextureSheetParticle {
     private final float rotAngleTo;
     private boolean stoppedByCollision;
 
-    private FragmentParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, ItemStack stack) {
+    private FragmentParticle(ClientLevel level, double x, double y, double z, double xd, double yd, double zd, float r, float g, float b, ItemStack stack) {
         super(level, x, y, z);
         this.lifetime = 60;
         this.startDuration = 5;
@@ -47,23 +47,11 @@ public class FragmentParticle extends ExtendedTextureSheetParticle {
         this.rotAngleTo = this.getRotAngleTo();
         this.oRoll = this.rotAngleFrom;
         this.roll = this.rotAngleFrom;
-        this.rCol = getRed(stack);
-        this.gCol = getGreen(stack);
-        this.bCol = getBlue(stack);
+        this.rCol = r;
+        this.gCol = g;
+        this.bCol = b;
         this.setSprite(this.getSprites(stack));
         this.setParticleSpeed(xd, yd, zd);
-    }
-
-    private static float getRed(ItemStack stack) {
-        return (float) FastColor.ARGB32.red(stack.getCount()) / 255.0F;
-    }
-
-    private static float getGreen(ItemStack stack) {
-        return (float) FastColor.ARGB32.green(stack.getCount()) / 255.0F;
-    }
-
-    private static float getBlue(ItemStack stack) {
-        return (float) FastColor.ARGB32.blue(stack.getCount()) / 255.0F;
     }
 
     private float getRotAngleTo() {
@@ -175,9 +163,25 @@ public class FragmentParticle extends ExtendedTextureSheetParticle {
     }
 
     public record Provider(SpriteSet sprites) implements ParticleProvider<ItemParticleOption> {
+        private static float getRed(int color) {
+            return (float) FastColor.ARGB32.red(color) / 255.0F;
+        }
+
+        private static float getGreen(int color) {
+            return (float) FastColor.ARGB32.green(color) / 255.0F;
+        }
+
+        private static float getBlue(int color) {
+            return (float) FastColor.ARGB32.blue(color) / 255.0F;
+        }
+
         public FragmentParticle createParticle(ItemParticleOption option, ClientLevel level, double x, double y, double z, double xd, double yd, double zd) {
             var item = option.getItem();
-            return new FragmentParticle(level, x, y, z, xd, yd, zd, item);
+            var color = item.getCount();
+            var r = getRed(color);
+            var g = getGreen(color);
+            var b = getBlue(color);
+            return new FragmentParticle(level, x, y, z, xd, yd, zd, r, g, b, item);
         }
     }
 }
