@@ -44,7 +44,8 @@ public class KeyParser {
         var location = ResourceLocation.tryParse(string);
         if (location == null) return null;
 
-        var id = BuiltInRegistries.ITEM.getId(location);
+        var item = BuiltInRegistries.ITEM.get(location);
+        var id = BuiltInRegistries.ITEM.getId(item);
         if (id == -1) return null;
 
         return id;

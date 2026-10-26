@@ -1,22 +1,29 @@
 package com.xm666.realisticcruelty;
 
 import net.minecraftforge.common.ForgeConfigSpec;
+import net.minecraftforge.fml.ModContainer;
+import net.minecraftforge.fml.config.ConfigTracker;
+import net.minecraftforge.fml.config.IConfigSpec;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.loading.FMLLoader;
+import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.fml.mclanguageprovider.MinecraftModContainer;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.tree.ClassNode;
 import org.spongepowered.asm.mixin.extensibility.IMixinConfigPlugin;
 import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 
+import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 
 public class MixinConfigPlugin implements IMixinConfigPlugin {
     @Override
     public void onLoad(String mixinPackage) {
         var container = new MinecraftModContainer(FMLLoader.getLoadingModList().getModFileById(RealisticCruelty.MODID).getMods().get(0));
-        Config.registerConfig(ModConfig.Type.CLIENT, MixinConfig.SPEC, container, "startup");
+        registerConfig(ModConfig.Type.CLIENT, MixinConfig.SPEC, container, "startup");
     }
 
     @Override
@@ -54,5 +61,21 @@ public class MixinConfigPlugin implements IMixinConfigPlugin {
 
     @Override
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+    }
+
+    public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec, ModContainer container) {
+        registerConfig(type, spec, container, type.extension());
+    }
+
+    public static void registerConfig(ModConfig.Type type, IConfigSpec<?> spec, ModContainer container, String extension) {
+        var fileName = String.format(Locale.ROOT, "%s-%s.toml", RealisticCruelty.MODID, extension);
+        var config = new ModConfig(type, spec, container, fileName);
+        try {
+            var method = ConfigTracker.class.getDeclaredMethod("openConfig", ModConfig.class, Path.class);
+            method.setAccessible(true);
+            method.invoke(ConfigTracker.INSTANCE, config, FMLPaths.CONFIGDIR.get());
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

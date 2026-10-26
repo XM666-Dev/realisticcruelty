@@ -3,8 +3,8 @@ package com.xm666.realisticcruelty.handler;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.TagsUpdatedEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TagsUpdatedEvent;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,7 +18,7 @@ public class KeySet<T> {
 
     public KeySet(ResourceKey<Registry<T>> registryKey) {
         this.registryKey = registryKey;
-        NeoForge.EVENT_BUS.addListener(this::onTagsUpdated);
+        MinecraftForge.EVENT_BUS.addListener(this::onTagsUpdated);
     }
 
     public void load(List<? extends String> strings) {
