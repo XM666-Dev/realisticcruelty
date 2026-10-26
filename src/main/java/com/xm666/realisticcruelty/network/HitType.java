@@ -1,7 +1,7 @@
 package com.xm666.realisticcruelty.network;
 
 import com.xm666.realisticcruelty.Config;
-import com.xm666.realisticcruelty.handler.TagObject;
+import com.xm666.realisticcruelty.handler.KeySet;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.phys.AABB;
@@ -13,7 +13,7 @@ public enum HitType {
     GENERAL {
         @Override
         public boolean isSourceMatched(DamageSource source) {
-            return is(source, Config.goreGeneralTagObject);
+            return contains(Config.goreGeneralDamageTypes, source);
         }
 
         @Override
@@ -76,7 +76,7 @@ public enum HitType {
     EXPLOSION {
         @Override
         public boolean isSourceMatched(DamageSource source) {
-            return is(source, Config.goreExplosionTagObject) && source.getSourcePosition() != null;
+            return contains(Config.goreExplosionDamageTypes, source) && source.getSourcePosition() != null;
         }
 
         public Vec3 getSourcePosition(DamageSource source) {
@@ -98,8 +98,8 @@ public enum HitType {
         return Arrays.stream(HIT_TYPES).filter(type -> type.isSourceMatched(source)).findFirst().orElse(null);
     }
 
-    public static boolean is(DamageSource source, TagObject<DamageType> tagObject) {
-        return tagObject.is(source.typeHolder());
+    public static boolean contains(KeySet<DamageType> damageTypes, DamageSource source) {
+        return damageTypes.contains(source.type());
     }
 
     public abstract boolean isSourceMatched(DamageSource source);
