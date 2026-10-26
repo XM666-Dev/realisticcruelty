@@ -32,13 +32,13 @@ public class Config {
     private static final ModConfigSpec.Builder BUILDER = new ModConfigSpec.Builder();
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>> GORE_BLACKLIST = BUILDER
-            .defineList("gore_blacklist", List.of(), () -> "", KeyParser::validateKey);
+            .defineListAllowEmpty("gore_blacklist", List.of(), () -> "", KeyParser::validateKey);
 
     public static final ModConfigSpec.BooleanValue GORE_USE_WHITELIST = BUILDER
             .define("gore_use_whitelist", false);
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>> GORE_COLORS = BUILDER
-            .defineList("gore_colors", List.of(
+            .defineListAllowEmpty("gore_colors", List.of(
                     "slime,0x70cc52",
                     "magma_cube,0x99471f",
                     "enderman,0x4d1f4d",
@@ -52,7 +52,7 @@ public class Config {
             .defineInRange("gore_color_default", 0x991F1F, 0, Integer.MAX_VALUE);
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>> GORE_TEXTURE_ITEMS = BUILDER
-            .defineList("gore_texture_items", List.of(
+            .defineListAllowEmpty("gore_texture_items", List.of(
                     "skeleton,bone",
                     "skeleton_horse,bone",
                     "wither_skeleton,bone",
@@ -66,13 +66,13 @@ public class Config {
             ), () -> "", object -> KeyParser.validateValueKey(object, KeyParser::parseItemId));
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>> GORE_GENERAL_DAMAGE_TYPES = BUILDER
-            .defineList("gore_general_damage_types", List.of(
+            .defineListAllowEmpty("gore_general_damage_types", List.of(
                     "#neoforge:is_physical",
                     "#minecraft:is_explosion"
             ), () -> "", KeyParser::validateKey);
 
     public static final ModConfigSpec.ConfigValue<List<? extends String>> GORE_EXPLOSION_DAMAGE_TYPES = BUILDER
-            .defineList("gore_explosion_damage_types", List.of(
+            .defineListAllowEmpty("gore_explosion_damage_types", List.of(
                     "#minecraft:is_explosion"
             ), () -> "", KeyParser::validateKey);
 
