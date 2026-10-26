@@ -80,8 +80,8 @@ public class ParticleTypes {
         return createParticleType(true, ItemParticleOption.DESERIALIZER, ItemParticleOption::codec);
     }
 
-    private static <T extends ParticleOptions> ParticleType<T> createParticleType(boolean overridesLimiter, ParticleOptions.Deserializer<T> deserializer, final Function<ParticleType<T>, Codec<T>> codec) {
-        return new ParticleType<>(overridesLimiter, deserializer) {
+    private static <T extends ParticleOptions> ParticleType<T> createParticleType(boolean overrideLimiter, ParticleOptions.Deserializer<T> deserializer, final Function<ParticleType<T>, Codec<T>> codec) {
+        return new ParticleType<>(overrideLimiter, deserializer) {
             public Codec<T> codec() {
                 return codec.apply(this);
             }
