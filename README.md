@@ -2,4 +2,4 @@
 RealisticCruelty
 =======
 
-A realistic gore mod for Minecraft.
+A realistic gore and hit feedback mod for Minecraft.
